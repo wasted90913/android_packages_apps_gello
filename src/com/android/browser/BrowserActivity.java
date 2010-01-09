@@ -75,6 +75,7 @@ import android.os.Process;
 import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.os.SystemClock;
+import android.os.SystemProperties;
 import android.provider.Browser;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.Intents.Insert;
@@ -160,6 +161,7 @@ public class BrowserActivity extends Activity
     private final static boolean DEBUG = com.android.browser.Browser.DEBUG;
     private final static boolean LOGV_ENABLED = com.android.browser.Browser.LOGV_ENABLED;
     private final static boolean LOGD_ENABLED = com.android.browser.Browser.LOGD_ENABLED;
+    private boolean debugPrint = false ;
 
     private IGoogleLoginService mGls = null;
     private ServiceConnection mGlsConnection = null;
@@ -303,6 +305,8 @@ public class BrowserActivity extends Activity
         // test the browser in OpenGL
         // requestWindowFeature(Window.FEATURE_OPENGL);
 
+        if( SystemProperties.getInt("debug.ui", 0) == 1 )
+            debugPrint = true ;
         setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);
 
         mResolver = getContentResolver();
@@ -2568,7 +2572,8 @@ public class BrowserActivity extends Activity
             }
 
             // Performance probe
-            if (false) {
+            // QuIC Performance Profiling Log
+            if (debugPrint) {
                 mStart = SystemClock.uptimeMillis();
                 mProcessStart = Process.getElapsedCpuTime();
                 long[] sysCpu = new long[7];
@@ -2621,7 +2626,8 @@ public class BrowserActivity extends Activity
             updateLockIconToLatest();
 
             // Performance probe
-            if (false) {
+            // QuIC Performance Profiling Log
+            if (debugPrint) {
                 long[] sysCpu = new long[7];
                 if (Process.readProcFile("/proc/stat", SYSTEM_CPU_FORMAT, null,
                         sysCpu, null)) {

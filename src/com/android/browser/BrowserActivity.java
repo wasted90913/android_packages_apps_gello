@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2006 The Android Open Source Project
+ * Copyright (C) 2009-10, Code Aurora Forum. All rights reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +19,12 @@ package com.android.browser;
 
 import com.google.android.googleapps.IGoogleLoginService;
 import com.google.android.googlelogin.GoogleLoginServiceConstants;
+import com.google.android.providers.GoogleSettings.Partner;
+import com.android.internal.telephony.gsm.stk.AppInterface;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
@@ -127,6 +131,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import static com.android.internal.telephony.gsm.stk.StkCmdMessage.SetupEventListConstants.*;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -165,8 +170,9 @@ public class BrowserActivity extends Activity
 
     private IGoogleLoginService mGls = null;
     private ServiceConnection mGlsConnection = null;
-
+    private static int browserTerminationCause = ERROR_TERMINATION;
     private SensorManager mSensorManager = null;
+    final static int EXIT_CONFIRMATION_DIALOG = 1;
 
     // These are single-character shortcuts for searching popular sources.
     private static final int SHORTCUT_INVALID = 0;
@@ -1167,6 +1173,11 @@ public class BrowserActivity extends Activity
             mGlsConnection = null;
         }
 
+        Log.e(LOGTAG,"Send BROWSER TERMINATION intent with cause:"+browserTerminationCause);
+        Intent StkIntent = new Intent(AppInterface.BROWSER_TERMINATE_ACTION);
+        StkIntent.putExtra(AppInterface.BROWSER_TERMINATION_CAUSE,browserTerminationCause);
+        sendBroadcast(StkIntent);
+        browserTerminationCause = ERROR_TERMINATION;
         //
         // stop MASF proxy service
         //
@@ -1508,6 +1519,30 @@ public class BrowserActivity extends Activity
         getTopWindow().requestFocus();
     }
 
+    public  DialogInterface.OnClickListener mExitDialogListener =
+       new DialogInterface.OnClickListener() {
+          public void onClick(DialogInterface dialog, int button) {
+             Log.w(LOGTAG,"BROWSER TERMINATION requested BY USER");
+             browserTerminationCause = USER_TERMINATION;
+             finish();
+          }
+       };
+
+    @Override
+    protected Dialog onCreateDialog(int id) {
+          switch (id) {
+             case EXIT_CONFIRMATION_DIALOG:
+                  return new AlertDialog.Builder(BrowserActivity.this)
+                   .setTitle(R.string.exitConfirmation_title)
+                   .setMessage(R.string.exitConfirmation)
+                   .setNegativeButton(android.R.string.cancel, null)
+                   .setPositiveButton(android.R.string.ok, mExitDialogListener)
+                   .setCancelable(false)
+                   .create();
+          }
+          return super.onCreateDialog(id);
+       }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (!mCanChord) {
@@ -1533,6 +1568,16 @@ public class BrowserActivity extends Activity
 
             case R.id.goto_menu_id:
                 onSearchRequested();
+                break;
+
+            case R.id.exit_menu_id:
+                if (mTabControl.getTabCount() > 1) {
+                    showDialog(EXIT_CONFIRMATION_DIALOG);
+                } else {
+                    Log.w(LOGTAG,"BROWSER TERMINATION requested BY USER");
+                    browserTerminationCause = USER_TERMINATION;
+                    finish();
+                }
                 break;
 
             case R.id.bookmarks_menu_id:

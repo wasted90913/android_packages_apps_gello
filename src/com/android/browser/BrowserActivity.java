@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2006 The Android Open Source Project
+ * Copyright (C) 2009-10, Code Aurora Forum. All rights reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +17,10 @@
 
 package com.android.browser;
 
+import com.android.internal.telephony.gsm.stk.AppInterface;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
@@ -113,6 +116,7 @@ import android.accounts.AccountManagerCallback;
 
 import com.android.common.Search;
 import com.android.common.speech.LoggingEvents;
+import static com.android.internal.telephony.gsm.stk.StkCmdMessage.SetupEventListConstants.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -150,6 +154,9 @@ public class BrowserActivity extends Activity
     private static final int SHORTCUT_WIKIPEDIA_SEARCH = 2;
     private static final int SHORTCUT_DICTIONARY_SEARCH = 3;
     private static final int SHORTCUT_GOOGLE_MOBILE_LOCAL_SEARCH = 4;
+
+    private static int browserTerminationCause = ERROR_TERMINATION;
+    final static int EXIT_CONFIRMATION_DIALOG = 1;
 
     private static class ClearThumbnails extends AsyncTask<File, Void, Void> {
         @Override
@@ -983,6 +990,13 @@ public class BrowserActivity extends Activity
         mTabControl.destroy();
         WebIconDatabase.getInstance().close();
 
+
+        Log.e(LOGTAG,"Send BROWSER TERMINATION intent with cause:"+browserTerminationCause);
+        Intent StkIntent = new Intent(AppInterface.BROWSER_TERMINATE_ACTION);
+        StkIntent.putExtra(AppInterface.BROWSER_TERMINATION_CAUSE,browserTerminationCause);
+        sendBroadcast(StkIntent);
+        browserTerminationCause = ERROR_TERMINATION;
+
         unregisterReceiver(mPackageInstallationReceiver);
 
         // Stop watching the default geolocation permissions
@@ -1271,6 +1285,30 @@ public class BrowserActivity extends Activity
         getTopWindow().requestFocus();
     }
 
+    public  DialogInterface.OnClickListener mExitDialogListener =
+       new DialogInterface.OnClickListener() {
+          public void onClick(DialogInterface dialog, int button) {
+             Log.w(LOGTAG,"BROWSER TERMINATION requested BY USER");
+             browserTerminationCause = USER_TERMINATION;
+             finish();
+          }
+       };
+
+    @Override
+    protected Dialog onCreateDialog(int id) {
+          switch (id) {
+             case EXIT_CONFIRMATION_DIALOG:
+                  return new AlertDialog.Builder(BrowserActivity.this)
+                   .setTitle(R.string.exitConfirmation_title)
+                   .setMessage(R.string.exitConfirmation)
+                   .setNegativeButton(android.R.string.cancel, null)
+                   .setPositiveButton(android.R.string.ok, mExitDialogListener)
+                   .setCancelable(false)
+                   .create();
+          }
+          return super.onCreateDialog(id);
+       }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (!mCanChord) {
@@ -1296,6 +1334,16 @@ public class BrowserActivity extends Activity
 
             case R.id.goto_menu_id:
                 editUrl();
+                break;
+
+            case R.id.exit_menu_id:
+                if (mTabControl.getTabCount() > 1) {
+                    showDialog(EXIT_CONFIRMATION_DIALOG);
+                } else {
+                    Log.w(LOGTAG,"BROWSER TERMINATION requested BY USER");
+                    browserTerminationCause = USER_TERMINATION;
+                    finish();
+                }
                 break;
 
             case R.id.bookmarks_menu_id:

@@ -74,6 +74,7 @@ class BrowserSettings extends Observable {
     private boolean autoFitPage;
     private boolean landscapeOnly;
     private boolean loadsPageInOverviewMode;
+    private boolean invertColor = false;
     private boolean showDebugSettings;
     // HTML5 API flags
     private boolean appCacheEnabled;
@@ -202,6 +203,7 @@ class BrowserSettings extends Observable {
             s.setSavePassword(b.rememberPasswords);
             s.setLoadWithOverviewMode(b.loadsPageInOverviewMode);
             s.setPageCacheCapacity(pageCacheCapacity);
+            s.setInvertColor(b.invertColor);
 
             // WebView inside Browser doesn't want initial focus to be set.
             s.setNeedInitialFocus(false);
@@ -315,6 +317,7 @@ class BrowserSettings extends Observable {
         } else {
             layoutAlgorithm = WebSettings.LayoutAlgorithm.NORMAL;
         }
+        invertColor = p.getBoolean("invert_color", invertColor);
         defaultTextEncodingName =
                 p.getString(PREF_DEFAULT_TEXT_ENCODING,
                         defaultTextEncodingName);
@@ -597,6 +600,7 @@ class BrowserSettings extends Observable {
         autoFitPage = true;
         landscapeOnly = false;
         loadsPageInOverviewMode = true;
+        invertColor = false;
         showDebugSettings = false;
         // HTML5 API flags
         appCacheEnabled = true;

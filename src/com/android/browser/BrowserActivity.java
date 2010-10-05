@@ -116,6 +116,7 @@ import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
 import android.accounts.AccountManagerCallback;
 
+import com.android.browser.search.SearchEngine;
 import com.android.common.Search;
 import com.android.common.speech.LoggingEvents;
 import static com.android.internal.telephony.gsm.stk.StkCmdMessage.SetupEventListConstants.*;
@@ -655,17 +656,9 @@ public class BrowserActivity extends Activity
             }
         }.execute();
 
-        Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
-        intent.addCategory(Intent.CATEGORY_DEFAULT);
-        intent.putExtra(SearchManager.QUERY, url);
-        if (appData != null) {
-            intent.putExtra(SearchManager.APP_DATA, appData);
-        }
-        if (extraData != null) {
-            intent.putExtra(SearchManager.EXTRA_DATA_KEY, extraData);
-        }
-        intent.putExtra(Browser.EXTRA_APPLICATION_ID, getPackageName());
-        startActivity(intent);
+        SearchEngine searchEngine = mSettings.getSearchEngine();
+        if (searchEngine == null) return false;
+        searchEngine.startSearch(this, url, appData, extraData);
 
         return true;
     }
@@ -1235,6 +1228,12 @@ public class BrowserActivity extends Activity
         if (appSearchData == null) {
             appSearchData = createGoogleSearchSourceBundle(GOOGLE_SEARCH_SOURCE_TYPE);
         }
+
+        SearchEngine searchEngine = mSettings.getSearchEngine();
+        if (searchEngine != null && !searchEngine.supportsVoiceSearch()) {
+            appSearchData.putBoolean(SearchManager.DISABLE_VOICE_SEARCH, true);
+        }
+
         super.startSearch(initialQuery, selectInitialQuery, appSearchData, globalSearch);
     }
 

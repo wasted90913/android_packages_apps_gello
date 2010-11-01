@@ -201,6 +201,9 @@ public class BrowserActivity extends Activity
 
         mResolver = getContentResolver();
 
+        // Setting needs to available before calling handleWebSearchIntent
+        mSettings = BrowserSettings.getInstance();
+
         // If this was a web search request, pass it on to the default web
         // search provider and finish this activity.
         if (handleWebSearchIntent(getIntent())) {
@@ -236,7 +239,6 @@ public class BrowserActivity extends Activity
         retainIconsOnStartup();
 
         // Keep a settings instance handy.
-        mSettings = BrowserSettings.getInstance();
         mSettings.setTabControl(mTabControl);
 
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
@@ -656,6 +658,7 @@ public class BrowserActivity extends Activity
             }
         }.execute();
 
+        if(mSettings == null) return false;
         SearchEngine searchEngine = mSettings.getSearchEngine();
         if (searchEngine == null) return false;
         searchEngine.startSearch(this, url, appData, extraData);
@@ -1229,6 +1232,7 @@ public class BrowserActivity extends Activity
             appSearchData = createGoogleSearchSourceBundle(GOOGLE_SEARCH_SOURCE_TYPE);
         }
 
+        if(mSettings == null) return;
         SearchEngine searchEngine = mSettings.getSearchEngine();
         if (searchEngine != null && !searchEngine.supportsVoiceSearch()) {
             appSearchData.putBoolean(SearchManager.DISABLE_VOICE_SEARCH, true);

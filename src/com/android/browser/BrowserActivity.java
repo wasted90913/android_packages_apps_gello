@@ -140,6 +140,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import android.net.Proxy;
 
 public class BrowserActivity extends Activity
     implements View.OnCreateContextMenuListener, DownloadListener {
@@ -387,6 +388,11 @@ public class BrowserActivity extends Activity
     }
 
     private void prefetchDnsForHistoryUrls() {
+        if(Proxy.getHost(getApplicationContext()) == null) {
+            if(LOGV_ENABLED)
+                Log.v(LOGTAG, "DNS prefetch for history URLs not started because Proxy is setup");
+            return;
+        }
         final Runnable getDnsResolution = new Runnable() {
             public void run() {
                 Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);

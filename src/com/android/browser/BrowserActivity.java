@@ -736,6 +736,11 @@ public class BrowserActivity extends Activity
         mActivityInPause = false;
         resumeWebViewTimers();
 
+        if (mCustomView != null) {
+            Log.v(LOGTAG, "Resume CustomView" );
+            mCustomViewCallback.onCustomViewResume();
+        }
+
         if (mWakeLock.isHeld()) {
             mHandler.removeMessages(RELEASE_WAKELOCK);
             mWakeLock.release();
@@ -920,7 +925,10 @@ public class BrowserActivity extends Activity
             Log.e(LOGTAG, "BrowserActivity is already paused.");
             return;
         }
-
+        if (mCustomView != null) {
+            Log.v(LOGTAG, "Suspending CustomView.");
+            mCustomViewCallback.onCustomViewSuspend();
+        }
         mTabControl.pauseCurrentTab();
         mActivityInPause = true;
         if (mTabControl.getCurrentIndex() >= 0 && !pauseWebViewTimers()) {

@@ -986,6 +986,10 @@ public class BrowserActivity extends Activity
         // unregister network state listener
         unregisterReceiver(mNetworkStateIntentReceiver);
         WebView.disablePlatformNotifications();
+
+        if (mCustomView != null) {
+            mTabControl.getCurrentWebView().getWebChromeClient().onHideCustomView();
+        }
     }
 
     @Override
@@ -2813,7 +2817,6 @@ public class BrowserActivity extends Activity
     void onHideCustomView() {
         if (mCustomView == null)
             return;
-
         // Hide the custom view.
         mCustomView.setVisibility(View.GONE);
         // Remove the custom view from its container.

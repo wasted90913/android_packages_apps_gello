@@ -211,6 +211,13 @@
                   android:title="@string/pref_extras_website_settings"
                   android:summary="@string/pref_extras_website_settings_summary" />
 
+            <ListPreference
+                android:key="user_agent"
+                android:title="@string/pref_development_uastring"
+                android:entries="@array/pref_development_ua_choices"
+                android:entryValues="@array/pref_development_ua_values"
+                android:defaultValue="0"/>
+
             <com.android.browser.BrowserYesNoPreference
                     android:key="reset_default_preferences"
                     android:title="@string/pref_extras_reset_default"

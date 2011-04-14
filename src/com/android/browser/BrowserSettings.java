@@ -197,14 +197,19 @@ class BrowserSettings extends Observable {
             if (b.userAgent == 0) {
                 // use the default ua string
                 s.setUserAgentString(null);
+                s.setInpageVideoEnabled(false);
             } else if (b.userAgent == 1) {
                 s.setUserAgentString(DESKTOP_USERAGENT);
+                s.setInpageVideoEnabled(true);
             } else if (b.userAgent == 2) {
                 s.setUserAgentString(IPHONE_USERAGENT);
+                s.setInpageVideoEnabled(false);
             } else if (b.userAgent == 3) {
                 s.setUserAgentString(IPAD_USERAGENT);
+                s.setInpageVideoEnabled(false);
             } else if (b.userAgent == 4) {
                 s.setUserAgentString(FROYO_USERAGENT);
+                s.setInpageVideoEnabled(false);
             }
             s.setUseWideViewPort(b.useWideViewPort);
             s.setLoadsImagesAutomatically(b.loadsImagesAutomatically);
@@ -384,8 +389,8 @@ class BrowserSettings extends Observable {
             tracing = p.getBoolean("enable_tracing", tracing);
             lightTouch = p.getBoolean("enable_light_touch", lightTouch);
             navDump = p.getBoolean("enable_nav_dump", navDump);
-            userAgent = Integer.parseInt(p.getString("user_agent", "0"));
         }
+        userAgent = Integer.parseInt(p.getString("user_agent", "0"));
         // JS flags is loaded from DB even if showDebugSettings is false,
         // so that it can be set once and be effective all the time.
         jsFlags = p.getString("js_engine_flags", "");

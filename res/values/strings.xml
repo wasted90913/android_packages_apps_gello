@@ -290,6 +290,8 @@
     <string name="pref_content_open_in_background">Open in background</string>
     <!-- Settings label -->
     <string name="pref_content_plugins">Enable plug-ins</string>
+    <!-- Settings label -->
+    <string name="pref_power_save_mode">Enable power save mode</string>
     <!-- Plugin options -->
     <string-array name="pref_content_plugins_choices">
         <item>Always on</item>
@@ -383,6 +385,8 @@
     <string name="pref_security_accept_cookies">Accept cookies</string>
     <!-- Settings summary -->
     <string name="pref_security_accept_cookies_summary">Allow sites to save and read \"cookie\" data</string>
+    <!-- Settings summary -->
+    <string name="pref_power_save_mode_summary">Reduce display power consumption by inverting webpage colors</string>
     <!-- Settings label -->
     <string name="pref_text_size">Text size</string>
     <!-- Settings text size options; appear in Text size dialog box -->

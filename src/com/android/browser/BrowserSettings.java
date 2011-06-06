@@ -97,6 +97,8 @@ class BrowserSettings extends Observable {
     private String databasePath; // default value set in loadFromDb()
     private String geolocationDatabasePath; // default value set in loadFromDb()
     private WebStorageSizeManager webStorageSizeManager;
+    // Display power optimization
+    private boolean displayPowerSaveModeEnabled = false;
 
     private String jsFlags = "";
 
@@ -213,6 +215,7 @@ class BrowserSettings extends Observable {
             }
             s.setUseWideViewPort(b.useWideViewPort);
             s.setLoadsImagesAutomatically(b.loadsImagesAutomatically);
+            s.setDisplayPowerSaveModeEnabled(b.displayPowerSaveModeEnabled);
             s.setJavaScriptEnabled(b.javaScriptEnabled);
             s.setPluginState(b.pluginState);
             s.setJavaScriptCanOpenWindowsAutomatically(
@@ -328,6 +331,8 @@ class BrowserSettings extends Observable {
 
         loadsImagesAutomatically = p.getBoolean("load_images",
                 loadsImagesAutomatically);
+        displayPowerSaveModeEnabled = p.getBoolean("enable_power_save_mode",
+                displayPowerSaveModeEnabled);
         javaScriptEnabled = p.getBoolean("enable_javascript",
                 javaScriptEnabled);
         pluginState = WebSettings.PluginState.valueOf(
@@ -643,6 +648,7 @@ class BrowserSettings extends Observable {
         // until the performance of PreferenceManager.setDefaultValues()
         // is improved.
         loadsImagesAutomatically = true;
+        displayPowerSaveModeEnabled = false;
         javaScriptEnabled = true;
         pluginState = WebSettings.PluginState.ON;
         javaScriptCanOpenWindowsAutomatically = false;

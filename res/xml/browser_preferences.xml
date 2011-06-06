@@ -62,6 +62,12 @@
                 android:summary="@string/pref_content_load_images_summary" />   
 
         <CheckBoxPreference
+                android:key="enable_power_save_mode"
+                android:defaultValue="false"
+                android:title="@string/pref_power_save_mode"
+                android:summary="@string/pref_power_save_mode_summary" />
+
+        <CheckBoxPreference
                 android:key="autofit_pages"
                 android:defaultValue="true"
                 android:title="@string/pref_content_autofit"

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--  Copyright (C) 2007 The Android Open Source Project
+      Copyright (C)  2010-2011, Code Aurora Forum. All rights reserved.
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -129,6 +130,7 @@
     <string name="pref_content_javascript" msgid="4570972030299516843">"启用 JavaScript"</string>
     <string name="pref_content_open_in_background" msgid="824123779725118663">"在后方打开"</string>
     <string name="pref_content_plugins" msgid="7231944644794301582">"启用插件"</string>
+    <string name="pref_power_save_mode">打开节能模式</string>
   <string-array name="pref_content_plugins_choices">
     <item msgid="6745108155096660725">"始终打开"</item>
     <item msgid="2484126708670016519">"在需要时打开"</item>
@@ -173,6 +175,7 @@
     <string name="pref_security_show_security_warning_summary" msgid="8968906112720511704">"当网站安全性出现问题时显示警告"</string>
     <string name="pref_security_accept_cookies" msgid="3201367661925047989">"接受 Cookie"</string>
     <string name="pref_security_accept_cookies_summary" msgid="1465118934875026920">"允许网站保存并读取 Cookie 数据"</string>
+    <string name="pref_power_save_mode_summary">通过改变网页对比色减小显示功耗</string>
     <string name="pref_text_size" msgid="3827031324346612208">"文字大小"</string>
   <string-array name="pref_text_size_choices">
     <item msgid="4952686548944739548">"超小"</item>

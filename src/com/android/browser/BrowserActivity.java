@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2006 The Android Open Source Project
+ * Copyright (c) 2011, Code Aurora Forum. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -2890,6 +2891,18 @@ public class BrowserActivity extends Activity
         if (contentDisposition == null
                 || !contentDisposition.regionMatches(
                         true, 0, "attachment", 0, 10)) {
+
+            // Sonivox doesn't support stream midi playback. If mimetype is mid/midi,
+            // we should notify the host application to avoid streamable check and
+            // download directly.
+            Uri uri = Uri.parse(url);
+            String scheme = uri.getScheme();
+
+            if(scheme.equals("http") && (( mimetype.equals("audio/midi")) || mimetype.equals("audio/mid"))) {
+                onDownloadStartNoStream(url, userAgent, contentDisposition, mimetype, contentLength);
+                return;
+            }
+
             // query the package manager to see if there's a registered handler
             //     that matches.
             Intent intent = new Intent(Intent.ACTION_VIEW);

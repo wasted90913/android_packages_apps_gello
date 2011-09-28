@@ -177,6 +177,8 @@
     <string name="pref_security_accept_cookies_summary" msgid="1465118934875026920">"允许网站保存并读取 Cookie 数据"</string>
     <string name="pref_power_save_mode_summary">通过改变网页对比色减小显示功耗</string>
     <string name="pref_text_size" msgid="3827031324346612208">"文字大小"</string>
+    <string name="pref_content_invert_color">反转颜色</string>
+    <string name="pref_content_invert_color_summary">以相反的颜色显示页面</string>
   <string-array name="pref_text_size_choices">
     <item msgid="4952686548944739548">"超小"</item>
     <item msgid="1950030433642671460">"小"</item>

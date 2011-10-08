@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2008 The Android Open Source Project
+ * Copyright (C) 2010-2011, Code Aurora Forum. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +32,8 @@ import android.provider.Downloads;
 import android.webkit.MimeTypeMap;
 import android.webkit.URLUtil;
 
+import android.util.Log;
+import java.net.URI;
 /**
  * This class is used to pull down the http headers of a given URL so that
  * we can analyse the mimetype and make any correction needed before we give
@@ -63,6 +66,12 @@ class FetchUrlMimeType extends AsyncTask<ContentValues, String, String> {
             return null;
         }
 
+        try {
+            URI.create(uri);
+        } catch (IllegalArgumentException ex) {
+            Log.e("FetchUrlMimeType.java","catch Illegal Exception");
+            return null;
+        }
         // User agent is likely to be null, though the AndroidHttpClient
         // seems ok with that.
         AndroidHttpClient client = AndroidHttpClient.newInstance(

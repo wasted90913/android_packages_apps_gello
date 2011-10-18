@@ -151,6 +151,7 @@ public class BrowserActivity extends Activity
     private final static boolean LOGD_ENABLED = com.android.browser.Browser.LOGD_ENABLED;
     final static int MAX_HISTORY_URLS_TO_BE_FETCHED = 10;
     final static String DATABASE_HISTORY_PREFETCH_CLAUSE = "visits DESC";
+    public boolean hasOpenTabAndShow = false;
 
     private static class ClearThumbnails extends AsyncTask<File, Void, Void> {
         @Override
@@ -2746,10 +2747,12 @@ public class BrowserActivity extends Activity
             // ignore the error. If no application can handle the URL,
             // eg about:blank, assume the browser can handle it.
         }
-
         if (mMenuIsDown) {
-            openTab(url);
             closeOptionsMenu();
+            if(hasOpenTabAndShow)
+                return false;
+            else
+                openTab(url);
             return true;
         }
         return false;

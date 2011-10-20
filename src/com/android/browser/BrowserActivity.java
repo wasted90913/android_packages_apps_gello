@@ -72,6 +72,7 @@ import android.provider.ContactsContract.Intents.Insert;
 import android.provider.Downloads;
 import android.provider.MediaStore;
 import android.speech.RecognizerResultsIntent;
+import android.telephony.TelephonyManager;
 import android.text.IClipboard;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
@@ -118,6 +119,7 @@ import android.accounts.AccountManagerCallback;
 import com.android.browser.search.SearchEngine;
 import com.android.common.Search;
 import com.android.common.speech.LoggingEvents;
+import com.android.internal.telephony.cdma.RuimRecords;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -385,6 +387,37 @@ public class BrowserActivity extends Activity
                 = new SystemAllowGeolocationOrigins(getApplicationContext());
         mSystemAllowGeolocationOrigins.start();
         prefetchDnsForHistoryUrls();
+
+
+    }
+
+    private void sendPopupNoneOMHWarningBroadcast(){
+         /**
+         * if a legacy card is inserted into an OMH enabled devices,we should popup a warning
+         * dialog to users everytime they try to setup data call.
+         */
+        TelephonyManager teleMgr = (TelephonyManager)getSystemService(TELEPHONY_SERVICE);
+        if(null != teleMgr){
+            if(TelephonyManager.PHONE_TYPE_CDMA == teleMgr.getPhoneType(TelephonyManager.getPreferredDataSubscription())){
+                Log.v(LOGTAG,"PHONE_TYPE_CDMA");
+                if(TelephonyManager.isOmhEnabled() && !TelephonyManager.isOmhCard()){
+                    Log.v(LOGTAG,"try to setup data call with legacy card in an OMH enabled devices");
+                      /**
+                     * notify the STK app service to popup a warning dialog to user that
+                     * the data service is not applicable.
+                     */
+                    new Thread(new Runnable() {
+                        public void run() {
+                            Intent intent = new Intent(RuimRecords.ACTION_OMH_RUIM_RECORDS_LOADED);
+                            BrowserActivity.this.sendBroadcast(intent);
+                            return ;
+                        }
+                    }, "sendPopupNoneOMHWarningBroadcast").start();
+                    return ;
+                }
+            }
+
+        }
     }
 
     private void prefetchDnsForHistoryUrls() {
@@ -771,6 +804,16 @@ public class BrowserActivity extends Activity
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        /**
+         * if legacy card is inserted on an OMH enabled device.popup a warning dialg
+         * onStart(),because if put this function in onResume,will lead to a infinite loop
+         */
+        sendPopupNoneOMHWarningBroadcast();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         if (LOGV_ENABLED) {
@@ -799,6 +842,8 @@ public class BrowserActivity extends Activity
         registerReceiver(mNetworkStateIntentReceiver,
                          mNetworkStateChangedFilter);
         WebView.enablePlatformNotifications();
+
+
     }
 
     /**

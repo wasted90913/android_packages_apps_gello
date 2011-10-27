@@ -2097,7 +2097,7 @@ public class BrowserActivity extends Activity
         resetTitleIconAndProgress();
     }
 
-    /* package */ void goBackOnePageOrQuit() {
+    /* package */ void goBackOnePageOrQuit(boolean callfromTab) {
         Tab current = mTabControl.getCurrentTab();
         if (current == null) {
             /*
@@ -2154,7 +2154,8 @@ public class BrowserActivity extends Activity
                  * root of the task. So we can use either true or false for
                  * moveTaskToBack().
                  */
-                moveTaskToBack(true);
+                 if(callfromTab == false)
+                     moveTaskToBack(true);
             }
         }
     }
@@ -2225,7 +2226,7 @@ public class BrowserActivity extends Activity
                                 dismissSubWindow(mTabControl.getCurrentTab());
                             }
                         } else {
-                            goBackOnePageOrQuit();
+                            goBackOnePageOrQuit(false);
                         }
                     }
                     return true;

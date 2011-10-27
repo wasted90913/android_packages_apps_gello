@@ -1356,7 +1356,7 @@ class Tab {
                     if (mActivity.getTabControl().getCurrentWebView()
                             == mMainView) {
                         // In this case, the Tab is still on top.
-                        mActivity.goBackOnePageOrQuit();
+                        mActivity.goBackOnePageOrQuit(true);
                     } else {
                         // In this case, it is not.
                         mActivity.closeTab(Tab.this);

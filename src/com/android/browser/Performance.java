@@ -32,6 +32,9 @@ public class Performance {
     private final static boolean LOGD_ENABLED =
             com.android.browser.Browser.LOGD_ENABLED;
 
+    private final static boolean WTA_PERF_LOG =
+            com.android.browser.Browser.WTA_PERF_LOG;
+
     private static boolean mInTrace;
 
     // Performance probe
@@ -78,10 +81,15 @@ public class Performance {
         }
     }
 
-    static void onPageStarted() {
+    static void onPageStarted(String url) {
         mStart = SystemClock.uptimeMillis();
         mProcessStart = Process.getElapsedCpuTime();
         long[] sysCpu = new long[7];
+        //Enable Log for pageload start activity
+        if(WTA_PERF_LOG){
+            Log.i(LOGTAG,"PageLoadStarted:startLoadingResource:onPageStarted url=" + url);
+        }
+
         if (Process.readProcFile("/proc/stat", SYSTEM_CPU_FORMAT, null, sysCpu, null)) {
             mUserStart = sysCpu[0] + sysCpu[1];
             mSystemStart = sysCpu[2];
@@ -109,7 +117,10 @@ public class Performance {
                             + " ms, idle took " + (sysCpu[3] - mIdleStart) * 10
                             + " ms and irq took " + (sysCpu[4] + sysCpu[5] + sysCpu[6] - mIrqStart)
                             * 10 + " ms, " + uiInfo;
-            if (LOGD_ENABLED) {
+            if(WTA_PERF_LOG){
+                Log.i(LOGTAG,"PageLoadFinished:loadFinished:onPageFinished url=" + url);
+            }
+            if (LOGD_ENABLED || WTA_PERF_LOG) {
                 Log.d(LOGTAG, performanceString + "\nWebpage: " + url);
             }
             if (url != null) {

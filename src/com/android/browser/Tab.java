@@ -153,8 +153,10 @@ class Tab implements PictureListener {
     // If true, the tab is in the foreground of the current activity.
     private boolean mInForeground;
     // If true, the tab is in page loading state (after onPageStarted,
-    // before onPageFinsihed)
+    // before onPageFinished)
     private boolean mInPageLoad;
+    // mirrors mInPageLoad, but isn't cleared until event has actually been processed.
+    private boolean mPageLoadEventNotProcessed;
     // The last reported progress of the current page
     private int mPageLoadProgress;
     // The time the load started, used to find load page time
@@ -336,6 +338,7 @@ class Tab implements PictureListener {
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             mInPageLoad = true;
             mUpdateThumbnail = true;
+            mPageLoadEventNotProcessed = true;
             mPageLoadProgress = INITIAL_PROGRESS;
             mCurrentState = new PageState(mContext,
                     view.isPrivateBrowsingEnabled(), url, favicon);
@@ -372,10 +375,16 @@ class Tab implements PictureListener {
 
         @Override
         public void onPageFinished(WebView view, String url) {
+            if (!mPageLoadEventNotProcessed) {
+                // In page navigation links (www.something.com#footer) will
+                // trigger an onPageFinished which we don't care about.
+                return;
+            }
             if (!isPrivateBrowsingEnabled()) {
                 LogTag.logPageFinishedLoading(
                         url, SystemClock.uptimeMillis() - mLoadStartTime);
             }
+            mPageLoadEventNotProcessed = false;
             syncCurrentState(view, url);
             mWebViewController.onPageFinished(Tab.this);
         }
@@ -1155,6 +1164,7 @@ class Tab implements PictureListener {
         mCurrentState = new PageState(mContext, w != null
                 ? w.isPrivateBrowsingEnabled() : false);
         mInPageLoad = false;
+        mPageLoadEventNotProcessed = false;
         mInForeground = false;
 
         mDownloadListener = new DownloadListener() {
@@ -1888,6 +1898,7 @@ class Tab implements PictureListener {
         if (mMainView != null) {
             mPageLoadProgress = INITIAL_PROGRESS;
             mInPageLoad = true;
+            mPageLoadEventNotProcessed = true;
             mCurrentState = new PageState(mContext, false, url, null);
             mWebViewController.onPageStarted(this, mMainView, null);
             mMainView.loadUrl(url, headers);

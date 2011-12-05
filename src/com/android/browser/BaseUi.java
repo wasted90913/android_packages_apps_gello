@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2010 The Android Open Source Project
+ * Copyright (c) 2011, Code Aurora Forum. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,7 +97,7 @@ public abstract class BaseUi implements UI {
     private WebChromeClient.CustomViewCallback mCustomViewCallback;
     private int mOriginalOrientation;
 
-    private LinearLayout mErrorConsoleContainer = null;
+    protected LinearLayout mErrorConsoleContainer = null;
 
     private UrlBarAutoShowManager mUrlBarAutoShowManager;
 
@@ -332,7 +333,7 @@ public abstract class BaseUi implements UI {
         mUiController.attachSubWindow(tab);
     }
 
-    private void removeTabFromContentView(Tab tab) {
+    protected void removeTabFromContentView(Tab tab) {
         hideTitleBar();
         // Remove the container that contains the main WebView.
         WebView mainView = tab.getWebView();
@@ -771,6 +772,9 @@ public abstract class BaseUi implements UI {
             }
         }
         win.setAttributes(winParams);
+    }
+
+    public void setUseSlideTransitions(boolean enabled) {
     }
 
     public Drawable getFaviconDrawable(Bitmap icon) {

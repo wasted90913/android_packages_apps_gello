@@ -887,7 +887,11 @@ public class BrowserActivity extends Activity
                     if (mIconView) {
                         // Switching the menu to expanded view, so hide the
                         // title bar.
-                        hideFakeTitleBar();
+                        if(mTabControl != null){
+                            WebView mainView = mTabControl.getCurrentWebView();
+                            if(mainView != null)
+                                hideFakeTitleBar();
+                        }
                         mIconView = false;
                     } else {
                         // Switching the menu back to icon view, so show the
@@ -1390,6 +1394,11 @@ public class BrowserActivity extends Activity
             // menu key.
             return false;
         }
+        if(item.getItemId()==R.id.new_tab_menu_id){
+            openTabToHomePage();
+            mCanChord = false;
+            return true;
+        }
         if (null == getTopWindow()) {
             return false;
         }
@@ -1651,6 +1660,17 @@ public class BrowserActivity extends Activity
                     canGoForward = w.canGoForward();
                     isHome = mSettings.getHomePage().equals(w.getUrl());
                 }
+                boolean canShow =  w!=null? true:false;
+                menu.findItem(R.id.stop_reload_menu_id).setEnabled(canShow);
+                menu.findItem(R.id.bookmarks_menu_id).setEnabled(canShow);
+                menu.findItem(R.id.active_tabs_menu_id).setEnabled(canShow);
+                menu.findItem(R.id.preferences_menu_id).setEnabled(canShow);
+                menu.findItem(R.id.add_bookmark_menu_id).setEnabled(canShow);
+                menu.findItem(R.id.find_menu_id).setEnabled(canShow);
+                menu.findItem(R.id.select_text_id).setEnabled(canShow);
+                menu.findItem(R.id.page_info_menu_id).setEnabled(canShow);
+                menu.findItem(R.id.share_page_menu_id).setEnabled(canShow);
+                menu.findItem(R.id.view_downloads_menu_id).setEnabled(canShow);
                 final MenuItem back = menu.findItem(R.id.back_menu_id);
                 back.setEnabled(canGoBack);
 

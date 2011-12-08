@@ -112,6 +112,8 @@ public class Controller
         "android.speech.extras.SEND_APPLICATION_ID_EXTRA";
     private static final String INCOGNITO_URI = "browser:incognito";
 
+    private final static boolean WTA_PERF_LOG =
+                            com.android.browser.Browser.WTA_PERF_LOG;
 
     // public message ids
     public final static int LOAD_URL = 1001;
@@ -823,8 +825,8 @@ public class Controller
         Performance.tracePageStart(url);
 
         // Performance probe
-        if (false) {
-            Performance.onPageStarted();
+        if (WTA_PERF_LOG) {
+            Performance.onPageStarted(tab.getUrl());
         }
 
     }
@@ -854,7 +856,7 @@ public class Controller
         }
 
         // Performance probe
-        if (false) {
+        if (WTA_PERF_LOG) {
             Performance.onPageFinished(tab.getUrl());
          }
 

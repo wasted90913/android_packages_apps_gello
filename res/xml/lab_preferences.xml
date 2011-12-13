@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright (C) 2008 The Android Open Source Project
+     Copyright (c) 2011, Code Aurora Forum. All rights reserved.
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -26,4 +27,9 @@
         android:defaultValue="false"
         android:title="@string/pref_lab_fullscreen"
         android:summary="@string/pref_lab_fullscreen_summary" />
+    <CheckBoxPreference
+        android:key="enable_slide_tab_transitions"
+        android:defaultValue="true"
+        android:title="@string/pref_lab_slide_tab_transitions"
+        android:summary="@string/pref_lab_slide_tab_transitions_summary" />
 </PreferenceScreen>

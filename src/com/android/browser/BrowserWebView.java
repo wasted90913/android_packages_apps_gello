@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2010 The Android Open Source Project
+ * Copyright (c) 2011, Code Aurora Forum. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -16,9 +17,11 @@
 
 package com.android.browser;
 
+import android.content.res.Resources;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.WebView;
 
@@ -37,6 +40,9 @@ public class BrowserWebView extends WebView {
     private TitleBar mTitleBar;
     private OnScrollChangedListener mOnScrollChangedListener;
 
+    // How close to the horizontal edge in pixels before a swipe gesture is registered.
+    private int mSlop;
+
     /**
      * @param context
      * @param attrs
@@ -46,6 +52,8 @@ public class BrowserWebView extends WebView {
     public BrowserWebView(Context context, AttributeSet attrs, int defStyle,
             Map<String, Object> javascriptInterfaces, boolean privateBrowsing) {
         super(context, attrs, defStyle, javascriptInterfaces, privateBrowsing);
+        Resources res = context.getResources();
+        mSlop = (int) res.getDimension(R.dimen.qc_slop);
     }
 
     /**
@@ -56,6 +64,8 @@ public class BrowserWebView extends WebView {
     public BrowserWebView(
             Context context, AttributeSet attrs, int defStyle, boolean privateBrowsing) {
         super(context, attrs, defStyle, privateBrowsing);
+        Resources res = context.getResources();
+        mSlop = (int) res.getDimension(R.dimen.qc_slop);
     }
 
     /**
@@ -64,6 +74,8 @@ public class BrowserWebView extends WebView {
      */
     public BrowserWebView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        Resources res = context.getResources();
+        mSlop = (int) res.getDimension(R.dimen.qc_slop);
     }
 
     /**
@@ -71,6 +83,8 @@ public class BrowserWebView extends WebView {
      */
     public BrowserWebView(Context context) {
         super(context);
+        Resources res = context.getResources();
+        mSlop = (int) res.getDimension(R.dimen.qc_slop);
     }
 
     @Override
@@ -126,4 +140,20 @@ public class BrowserWebView extends WebView {
         return false;
     }
 
+    /* Detect a swipe from the edge. */
+    @Override
+    public boolean onTouchEvent(MotionEvent e) {
+        if (!BrowserSettings.getInstance().useSlideTabTransitions())
+            return super.onTouchEvent(e);
+
+        float x = e.getX();
+        int action = e.getActionMasked();
+
+        if (action == MotionEvent.ACTION_DOWN) {
+            // Let the RVS handle the swipe gesture.
+            if ((x > getWidth() - mSlop) || (x < mSlop))
+                return false;
+        }
+        return super.onTouchEvent(e);
+    }
 }

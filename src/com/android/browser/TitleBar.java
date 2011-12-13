@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2010 The Android Open Source Project
+ * Copyright (c) 2011, Code Aurora Forum. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,6 +53,7 @@ public class TitleBar extends RelativeLayout {
     private AutologinBar mAutoLogin;
     private NavigationBarBase mNavBar;
     private boolean mUseQuickControls;
+    private boolean mUseSlideTransitions;
     private SnapshotBar mSnapshotBar;
 
     //state
@@ -105,6 +107,13 @@ public class TitleBar extends RelativeLayout {
         return mUiController;
     }
 
+    public void setUseSlideTransitions(boolean use) {
+        mUseSlideTransitions = use;
+        setLayoutParams(makeLayoutParams());
+        if (!use)
+            setVisibility(VISIBLE);
+    }
+
     public void setUseQuickControls(boolean use) {
         mUseQuickControls = use;
         setLayoutParams(makeLayoutParams());
@@ -133,6 +142,10 @@ public class TitleBar extends RelativeLayout {
     void show() {
         if (mUseQuickControls) {
             mParent.addView(this);
+        } else if(mUseSlideTransitions) {
+            if (getParent() == null)
+                mParent.addView(this);
+            setVisibility(VISIBLE);
         } else {
             if (!mSkipTitleBarAnimations) {
                 cancelTitleBarAnimation(false);
@@ -155,6 +168,8 @@ public class TitleBar extends RelativeLayout {
     void hide() {
         if (mUseQuickControls) {
             mParent.removeView(this);
+        } else if (mUseSlideTransitions) {
+            setVisibility(GONE);
         } else {
             if (!mSkipTitleBarAnimations) {
                 cancelTitleBarAnimation(false);
@@ -355,7 +370,7 @@ public class TitleBar extends RelativeLayout {
     }
 
     private ViewGroup.LayoutParams makeLayoutParams() {
-        if (mUseQuickControls) {
+        if (mUseQuickControls || mUseSlideTransitions) {
             return new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT,
                     LayoutParams.WRAP_CONTENT);
         } else {
@@ -389,5 +404,4 @@ public class TitleBar extends RelativeLayout {
             mNavBar.setVisibility(VISIBLE);
         }
     }
-
 }

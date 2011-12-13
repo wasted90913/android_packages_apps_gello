@@ -90,17 +90,25 @@ public class ComboViewActivity extends Activity implements CombinedBookmarksCall
             switch (startingView) {
             case Bookmarks:
                 try {
-                    Class type = Class.forName("com.android.qualcomm.modemwarmup.ModemWarmup");
+                    String pluginJar = "/system/framework/modemwarmup.jar";
+                    dalvik.system.PathClassLoader pluginClassLoader=null;
+                    pluginClassLoader = new dalvik.system.PathClassLoader(pluginJar,ClassLoader.getSystemClassLoader());
+                    Class type = Class.forName("com.android.qualcomm.modemwarmup.ModemWarmup",true,pluginClassLoader);
                     type.getMethod("warmModem").invoke(type.newInstance());
                 } catch (Throwable e) {
+                    Log.v("ModemWarmup", "Exception" + e);
                 }
                 mViewPager.setCurrentItem(0);
                 break;
             case History:
                 try {
-                    Class type = Class.forName("com.android.qualcomm.modemwarmup.ModemWarmup");
+                    String pluginJar = "/system/framework/modemwarmup.jar";
+                    dalvik.system.PathClassLoader pluginClassLoader=null;
+                    pluginClassLoader = new dalvik.system.PathClassLoader(pluginJar,ClassLoader.getSystemClassLoader());
+                    Class type = Class.forName("com.android.qualcomm.modemwarmup.ModemWarmup",true,pluginClassLoader);
                     type.getMethod("warmModem").invoke(type.newInstance());
                 } catch (Throwable e) {
+                    Log.v("ModemWarmup", "Exception" + e);
                 }
                 mViewPager.setCurrentItem(1);
                 break;

@@ -37,4 +37,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
+    <!-- Navigator permissions prompt -->
+    <ViewStub android:id="@+id/navigator_permissions_prompt"
+        android:layout="@layout/navigator_permissions_prompt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
 </LinearLayout>

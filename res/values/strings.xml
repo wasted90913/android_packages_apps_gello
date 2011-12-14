@@ -937,6 +937,12 @@
     <string name="website_settings_clear_all_dialog_message">Delete all website data and location permissions?</string>
     <string name="website_settings_clear_all_dialog_ok_button">OK</string>
     <string name="website_settings_clear_all_dialog_cancel_button">Cancel</string>
+    <!-- Navigator Permissions -->
+    <!-- Permissions prompt -->
+    <string name="navigator_permissions_prompt_message"><xliff:g id="website ">%s</xliff:g> wants to access <xliff:g id="feature">%s</xliff:g> on your device </string>
+    <string name="navigator_permissions_prompt_share">Allow</string>
+    <string name="navigator_permissions_prompt_dont_share">Decline</string>
+    <string name="navigator_permissions_prompt_remember">Remember preference</string>
 
     <!-- Text in the progress dialog when we are setting an image as the home screen wallpaper. -->
     <string name="progress_dialog_setting_wallpaper">Setting wallpaper\u2026</string>

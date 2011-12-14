@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2009 The Android Open Source Project
+ * Copyright (c) 2011, Code Aurora Forum. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -137,6 +138,8 @@ class Tab implements PictureListener {
 
     // The Geolocation permissions prompt
     private GeolocationPermissionsPrompt mGeolocationPermissionsPrompt;
+    // The Navigator permissions prompt
+    private NavigatorPermissionsPrompt mNavigatorPermissionsPrompt;
     // Main WebView wrapper
     private View mContainer;
     // Main WebView
@@ -945,7 +948,7 @@ class Tab implements PictureListener {
     // WebChromeClient implementation for the main WebView
     // -------------------------------------------------------------------------
 
-    private final WebChromeClient mWebChromeClient = new WebChromeClient() {
+    private final WebChromeClient mWebChromeClient = new BrowserWebChromeClient() {
         // Helper method to create a new tab or sub window.
         private void createWindow(final boolean dialog, final Message msg) {
             WebView.WebViewTransport transport =
@@ -1164,6 +1167,34 @@ class Tab implements PictureListener {
         public void onGeolocationPermissionsHidePrompt() {
             if (mInForeground && mGeolocationPermissionsPrompt != null) {
                 mGeolocationPermissionsPrompt.hide();
+            }
+        }
+
+        /**
+         * Instructs the browser to show a prompt to ask the user to set the
+         * Navigator  permission state for the specified origin.
+         * @param features device apis for which feature permissions are
+         *     requested.
+         * @param appid The website for which feature permissions are
+         *     requested.
+         * @param callback The callback to call once the user has set the
+         *     feature permission state.
+         */
+        @Override
+        public void onNavigatorPermissionsShowPrompt(Vector<String> features, String appid,
+                GeolocationPermissions.Callback callback) {
+            if (mInForeground) {
+                getNavigatorPermissionsPrompt().show(features, appid, callback);
+            }
+        }
+
+        /**
+         * Instructs the browser to hide the navigator permissions prompt.
+         */
+        @Override
+        public void onNavigatorPermissionsHidePrompt() {
+            if (mNavigatorPermissionsPrompt != null) {
+                mNavigatorPermissionsPrompt.hide();
             }
         }
 
@@ -1524,6 +1555,12 @@ class Tab implements PictureListener {
             mGeolocationPermissionsPrompt.hide();
         }
 
+        // If the WebView is changing, the page will be reloaded, so any ongoing
+        // Navigator permission requests are void.
+        if (mNavigatorPermissionsPrompt != null) {
+            mNavigatorPermissionsPrompt.hide();
+        }
+
         mWebViewController.onSetWebView(this, w);
 
         if (mMainView != null) {
@@ -1830,6 +1867,20 @@ class Tab implements PictureListener {
                     .inflate();
         }
         return mGeolocationPermissionsPrompt;
+    }
+
+    /**
+     * @return The Navigator permissions prompt for this tab.
+     */
+    NavigatorPermissionsPrompt getNavigatorPermissionsPrompt() {
+        if (mNavigatorPermissionsPrompt == null) {
+            ViewStub stub = (ViewStub) mContainer
+                    .findViewById(R.id.navigator_permissions_prompt);
+            mNavigatorPermissionsPrompt = (NavigatorPermissionsPrompt) stub
+                    .inflate();
+            mNavigatorPermissionsPrompt.init();
+        }
+        return mNavigatorPermissionsPrompt;
     }
 
     /**

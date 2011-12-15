@@ -1,6 +1,7 @@
 
 /*
  * Copyright (C) 2007 The Android Open Source Project
+ * Copyright (c) 2011, Code Aurora Forum. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -191,6 +192,9 @@ class BrowserSettings extends Observable {
     private HashMap<WebSettings,Observer> mWebSettingsToObservers =
         new HashMap<WebSettings,Observer>();
 
+    //add for CU feather
+    private static Context resPackageCtx = null;
+
     /*
      * An observer wrapper for updating a WebSettings object with the new
      * settings after a call to BrowserSettings.update().
@@ -295,6 +299,15 @@ class BrowserSettings extends Observable {
         databasePath = ctx.getDir("databases", 0).getPath();
         // Set the default value for the Geolocation database path.
         geolocationDatabasePath = ctx.getDir("geolocation", 0).getPath();
+
+        //add for CU feather
+        try {
+            resPackageCtx = ctx.createPackageContext(
+                    "com.android.browser.res",
+                    Context.CONTEXT_IGNORE_SECURITY);
+        } catch (Exception e) {
+            Log.e("Res_Update", "Create Res Apk Failed");
+        }
 
         if (p.getString(PREF_HOMEPAGE, "") == "") {
             // No home page preferences is set, set it to default.
@@ -641,7 +654,17 @@ class BrowserSettings extends Observable {
     }
 
     private String getFactoryResetHomeUrl(Context context) {
-        String url = context.getResources().getString(R.string.homepage_base);
+        String url = null;
+        //add for CU feather
+        if (null == resPackageCtx) {
+            url = context.getResources().getString(R.string.homepage_base);
+        } else {
+            int resID = resPackageCtx.getResources().getIdentifier(
+                    "homepage_base", "string", "com.android.browser.res");
+
+            url = resPackageCtx.getResources().getString(resID);
+        }
+
         if (url.indexOf("{CID}") != -1) {
             url = url.replace("{CID}",
                     BrowserProvider.getClientId(context.getContentResolver()));

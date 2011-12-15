@@ -66,6 +66,7 @@ import android.os.PowerManager;
 import android.os.Process;
 import android.os.ServiceManager;
 import android.os.SystemClock;
+import android.os.SystemProperties;
 import android.provider.Browser;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.Intents.Insert;
@@ -141,6 +142,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import android.net.Proxy;
+import com.qrd.plugin.feature_query.FeatureQuery;
 
 public class BrowserActivity extends Activity
     implements View.OnCreateContextMenuListener, DownloadListener {
@@ -1562,6 +1564,9 @@ public class BrowserActivity extends Activity
                     }
                 }
                 break;
+            case R.id.exit_browser_menu_id:
+                finish();
+                break;
 
             default:
                 if (!super.onOptionsItemSelected(item)) {
@@ -1689,6 +1694,20 @@ public class BrowserActivity extends Activity
                 send.setType("text/plain");
                 ResolveInfo ri = pm.resolveActivity(send, PackageManager.MATCH_DEFAULT_ONLY);
                 menu.findItem(R.id.share_page_menu_id).setVisible(ri != null);
+
+                //these four menu item is control by switch
+                if (!FeatureQuery.FEATURE_NEW_WINDOW_MENU) {
+                    menu.findItem(R.id.new_tab_menu_id).setVisible(false);
+                }
+                if (!FeatureQuery.FEATURE_BACK_MENU) {
+                    menu.findItem(R.id.back_menu_id).setVisible(false);
+                }
+                if (!FeatureQuery.FEATURE_HOMEPAGE_MENU) {
+                    menu.findItem(R.id.homepage_menu_id).setVisible(false);
+                }
+                if (!FeatureQuery.FEATURE_EXIT_MENU) {
+                    menu.findItem(R.id.exit_browser_menu_id).setVisible(false);
+                }
 
                 boolean isNavDump = mSettings.isNavDump();
                 final MenuItem nav = menu.findItem(R.id.dump_nav_menu_id);

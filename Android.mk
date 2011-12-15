@@ -12,6 +12,8 @@ LOCAL_SRC_FILES := \
 
 LOCAL_PACKAGE_NAME := Browser
 
+LOCAL_JAVA_LIBRARIES := com.qrd.plugin.feature_query
+
 LOCAL_EMMA_COVERAGE_FILTER := *,-com.android.common.*
 
 include $(BUILD_PACKAGE)

@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2008 The Android Open Source Project
- *
+ * Copyright (c) 2011, Code Aurora Forum. All rights reserved.
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,6 +23,7 @@ import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceCategory;
 import android.preference.PreferenceScreen;
 import android.webkit.GeolocationPermissions;
 import android.webkit.ValueCallback;
@@ -29,6 +31,7 @@ import android.webkit.WebStorage;
 
 import java.util.Map;
 import java.util.Set;
+import com.qrd.plugin.feature_query.FeatureQuery;
 
 public class BrowserPreferencesPage extends PreferenceActivity
         implements Preference.OnPreferenceChangeListener {
@@ -70,6 +73,13 @@ public class BrowserPreferencesPage extends PreferenceActivity
 
         e = findPreference(BrowserSettings.PREF_CLEAR_HISTORY);
         e.setOnPreferenceChangeListener(this);
+
+        if (!FeatureQuery.FEATURE_UA_SELECTION) {
+           //get the category that the user agent is belong to
+           PreferenceCategory preCategory = (PreferenceCategory)findPreference("pref_extras");
+           //hide the user agent preference
+           preCategory.removePreference(findPreference("user_agent"));
+        }
 
         if (BrowserSettings.getInstance().showDebugSettings()) {
             addPreferencesFromResource(R.xml.debug_preferences);

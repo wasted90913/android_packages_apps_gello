@@ -56,6 +56,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.Observable;
+import com.qrd.plugin.feature_query.FeatureQuery;
 
 /*
  * Package level class for storing various WebView and Browser settings. To use
@@ -212,22 +213,37 @@ class BrowserSettings extends Observable {
             WebSettings s = mSettings;
 
             s.setLayoutAlgorithm(b.layoutAlgorithm);
-            if (b.userAgent == 0) {
-                // use the default ua string
-                s.setUserAgentString(null);
+            //modify for CU feature
+            if (!FeatureQuery.FEATURE_UA_SELECTION) {
+                String uaString = null;
+                if (null != resPackageCtx) {
+                    //get string id from string.xml in plug in resource file
+                    int resID = resPackageCtx.getResources().getIdentifier(
+                            "user_agent_string", "string", "com.android.browser.res");
+                    if (resID != 0) {
+                        uaString = resPackageCtx.getResources().getString(resID);
+                    }
+                }
+                s.setUserAgentString(uaString);
                 s.setInpageVideoEnabled(false);
-            } else if (b.userAgent == 1) {
-                s.setUserAgentString(DESKTOP_USERAGENT);
-                s.setInpageVideoEnabled(true);
-            } else if (b.userAgent == 2) {
-                s.setUserAgentString(IPHONE_USERAGENT);
-                s.setInpageVideoEnabled(false);
-            } else if (b.userAgent == 3) {
-                s.setUserAgentString(IPAD_USERAGENT);
-                s.setInpageVideoEnabled(false);
-            } else if (b.userAgent == 4) {
-                s.setUserAgentString(FROYO_USERAGENT);
-                s.setInpageVideoEnabled(false);
+            } else {
+                if (b.userAgent == 0) {
+                    // use the default ua string
+                    s.setUserAgentString(null);
+                    s.setInpageVideoEnabled(false);
+                } else if (b.userAgent == 1) {
+                    s.setUserAgentString(DESKTOP_USERAGENT);
+                    s.setInpageVideoEnabled(true);
+                } else if (b.userAgent == 2) {
+                    s.setUserAgentString(IPHONE_USERAGENT);
+                    s.setInpageVideoEnabled(false);
+                } else if (b.userAgent == 3) {
+                    s.setUserAgentString(IPAD_USERAGENT);
+                    s.setInpageVideoEnabled(false);
+                } else if (b.userAgent == 4) {
+                    s.setUserAgentString(FROYO_USERAGENT);
+                    s.setInpageVideoEnabled(false);
+                }
             }
             s.setUseWideViewPort(b.useWideViewPort);
             s.setLoadsImagesAutomatically(b.loadsImagesAutomatically);

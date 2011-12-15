@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright (C) 2008 The Android Open Source Project
+     Copyright (C) 2011, Code Aurora Forum. All rights reserved.
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -23,18 +24,24 @@
         <item android:id="@+id/bookmarks_menu_id"
             android:title="@string/bookmarks"
             android:alphabeticShortcut="b"
-            android:icon="@drawable/ic_menu_bookmarks"
-            />
+            android:icon="@drawable/ic_menu_bookmarks" />
         <item android:id="@+id/active_tabs_menu_id"
             android:title="@string/active_tabs"
             android:icon="@drawable/ic_menu_windows"
             android:alphabeticShortcut="t" />
         <item android:id="@+id/stop_reload_menu_id"
             android:alphabeticShortcut="r" />
+        <item android:id="@+id/back_menu_id"
+            android:title="@string/back"
+            android:alphabeticShortcut="j"
+            android:icon="@*android:drawable/ic_menu_back" />
         <item android:id="@+id/forward_menu_id"
             android:title="@string/forward"
             android:alphabeticShortcut="k"
             android:icon="@*android:drawable/ic_menu_forward" />
+        <item android:id="@+id/homepage_menu_id"
+            android:title="@string/website_homepage"
+            android:alphabeticShortcut="&#32;" />
         <item android:id="@+id/add_bookmark_menu_id"
             android:title="@string/save_to_bookmarks"
             android:icon="@drawable/ic_menu_add_bookmark"
@@ -64,6 +71,9 @@
         <item android:id="@+id/dump_counters_menu_id"
             android:title="@string/dump_counters"
             android:visible="false" />
+        <item android:id="@+id/exit_browser_menu_id"
+            android:title="@string/exit_browser"
+            android:icon="@drawable/ic_btn_close_panel" />
     </group>
     <group android:id="@+id/MAIN_SHORTCUT_MENU" android:visible="false">
         <item android:id="@+id/homepage_menu_id"

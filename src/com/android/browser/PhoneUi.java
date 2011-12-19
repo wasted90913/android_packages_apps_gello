@@ -406,6 +406,10 @@ public class PhoneUi extends BaseUi implements RealViewSwitcher.OnScreenSwitchLi
 
     @Override
     public void updateMenuState(Tab tab, Menu menu) {
+        MenuItem bm = menu.findItem(R.id.bookmarks_menu_id);
+        if (bm != null) {
+            bm.setVisible(!showingNavScreen());
+        }
         MenuItem abm = menu.findItem(R.id.add_bookmark_menu_id);
         if (abm != null) {
             abm.setVisible((tab != null) && !tab.isSnapshot() && !showingNavScreen());
@@ -547,7 +551,9 @@ public class PhoneUi extends BaseUi implements RealViewSwitcher.OnScreenSwitchLi
             mAnimScreen.setScaleFactor(1f);
         }
         mAnimScreen.set(getTitleBar(), getWebView());
-        mCustomViewContainer.addView(mAnimScreen.mMain, COVER_SCREEN_PARAMS);
+        if (mAnimScreen.mMain.getParent() == null) {
+            mCustomViewContainer.addView(mAnimScreen.mMain, COVER_SCREEN_PARAMS);
+        }
         mCustomViewContainer.setVisibility(View.VISIBLE);
         mCustomViewContainer.bringToFront();
         mAnimScreen.mMain.layout(0, 0, mContentView.getWidth(),
@@ -762,12 +768,14 @@ public class PhoneUi extends BaseUi implements RealViewSwitcher.OnScreenSwitchLi
                 if (mTitleBarBitmap == null
                         || mTitleBarBitmap.getWidth() != tbar.getWidth()
                         || mTitleBarBitmap.getHeight() != tbar.getEmbeddedHeight()) {
-                    mTitleBarBitmap = Bitmap.createBitmap(tbar.getWidth(),
-                            tbar.getEmbeddedHeight(), Bitmap.Config.RGB_565);
+                    mTitleBarBitmap = safeCreateBitmap(tbar.getWidth(),
+                            tbar.getEmbeddedHeight());
                 }
-                Canvas c = new Canvas(mTitleBarBitmap);
-                tbar.draw(c);
-                c.setBitmap(null);
+                if (mTitleBarBitmap != null) {
+                    Canvas c = new Canvas(mTitleBarBitmap);
+                    tbar.draw(c);
+                    c.setBitmap(null);
+                }
             } else {
                 mTitleBarBitmap = null;
             }
@@ -777,16 +785,26 @@ public class PhoneUi extends BaseUi implements RealViewSwitcher.OnScreenSwitchLi
             if (mContentBitmap == null
                     || mContentBitmap.getWidth() != web.getWidth()
                     || mContentBitmap.getHeight() != h) {
-                mContentBitmap = Bitmap.createBitmap(web.getWidth(), h,
-                        Bitmap.Config.RGB_565);
+                mContentBitmap = safeCreateBitmap(web.getWidth(), h);
             }
-            Canvas c = new Canvas(mContentBitmap);
-            int tx = web.getScrollX();
-            int ty = web.getScrollY();
-            c.translate(-tx, -ty - tbar.getEmbeddedHeight());
-            web.draw(c);
-            c.setBitmap(null);
+            if (mContentBitmap != null) {
+                Canvas c = new Canvas(mContentBitmap);
+                int tx = web.getScrollX();
+                int ty = web.getScrollY();
+                c.translate(-tx, -ty - tbar.getEmbeddedHeight());
+                web.draw(c);
+                c.setBitmap(null);
+            }
             mContent.setImageBitmap(mContentBitmap);
+        }
+
+        private Bitmap safeCreateBitmap(int width, int height) {
+            if (width <= 0 || height <= 0) {
+                Log.w(LOGTAG, "safeCreateBitmap failed! width: " + width
+                        + ", height: " + height);
+                return null;
+            }
+            return Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
         }
 
         public void set(Bitmap image) {

@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2008 The Android Open Source Project
- * Copyright (c) 2011, Code Aurora Forum. All rights reserved.
+ * Copyright (c) 2011-2012, Code Aurora Forum. All rights reserved.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,7 +74,7 @@ public class BrowserPreferencesPage extends PreferenceActivity
         e = findPreference(BrowserSettings.PREF_CLEAR_HISTORY);
         e.setOnPreferenceChangeListener(this);
 
-        if (!FeatureQuery.FEATURE_UA_SELECTION) {
+        if (!FeatureQuery.FEATURE_BROWSER_UA_SELECTION) {
            //get the category that the user agent is belong to
            PreferenceCategory preCategory = (PreferenceCategory)findPreference("pref_extras");
            //hide the user agent preference

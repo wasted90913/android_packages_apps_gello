@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2006 The Android Open Source Project
- * Copyright (c) 2011, Code Aurora Forum. All rights reserved.
+ * Copyright (c) 2011-2012, Code Aurora Forum. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1696,16 +1696,16 @@ public class BrowserActivity extends Activity
                 menu.findItem(R.id.share_page_menu_id).setVisible(ri != null);
 
                 //these four menu item is control by switch
-                if (!FeatureQuery.FEATURE_NEW_WINDOW_MENU) {
+                if (!FeatureQuery.FEATURE_BROWSER_NEW_WINDOW_MENU) {
                     menu.findItem(R.id.new_tab_menu_id).setVisible(false);
                 }
-                if (!FeatureQuery.FEATURE_BACK_MENU) {
+                if (!FeatureQuery.FEATURE_BROWSER_BACK_MENU) {
                     menu.findItem(R.id.back_menu_id).setVisible(false);
                 }
-                if (!FeatureQuery.FEATURE_HOMEPAGE_MENU) {
+                if (!FeatureQuery.FEATURE_BROWSER_HOMEPAGE_MENU) {
                     menu.findItem(R.id.homepage_menu_id).setVisible(false);
                 }
-                if (!FeatureQuery.FEATURE_EXIT_MENU) {
+                if (!FeatureQuery.FEATURE_BROWSER_EXIT_MENU) {
                     menu.findItem(R.id.exit_browser_menu_id).setVisible(false);
                 }
 

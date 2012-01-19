@@ -24,6 +24,8 @@
     <string name="uploads_disabled">File uploads are disabled.</string>
     <!-- Name of menu item of a new tab.  Also used in the title bar when displaying a new tab -->
     <string name="new_tab">New tab</string>
+    <!-- Name of menu item to manage feature permissions -->
+    <string name="manage_feature_permissions">Manage Permissions</string>
     <!-- Name of menu item of a new incognito tab.  Also used in the
          title bar when displaying a new tab [CHAR LIMIT=30] -->
     <string name="new_incognito_tab">New incognito tab</string>

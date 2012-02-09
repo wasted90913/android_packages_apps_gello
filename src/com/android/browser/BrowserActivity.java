@@ -2972,8 +2972,8 @@ public class BrowserActivity extends Activity
      * @param mimetype The mimetype of the content reported by the server
      * @param contentLength The file size reported by the server
      */
-    public void onDownloadStart(String url, String userAgent,
-            String contentDisposition, String mimetype, long contentLength) {
+    public void onDownloadStart(final String url, final String userAgent,
+            final String contentDisposition, final String mimetype, final long contentLength) {
         // if we're dealing wih A/V content that's not explicitly marked
         //     for download, check if it's streamable.
         if (contentDisposition == null
@@ -2988,6 +2988,33 @@ public class BrowserActivity extends Activity
 
             if(scheme.equals("http") && (( mimetype.equals("audio/midi")) || mimetype.equals("audio/mid"))) {
                 onDownloadStartNoStream(url, userAgent, contentDisposition, mimetype, contentLength);
+                return;
+            }
+
+            //Choose save or play when stream play
+            if ( "http".equalsIgnoreCase(scheme) && ( mimetype.startsWith("video/")|| mimetype.startsWith("audio/"))) {
+                new AlertDialog.Builder(this)
+                   .setTitle(R.string.application_name)
+                   .setIcon(R.drawable.default_video_poster)
+                   .setMessage(R.string.http_video_msg)
+                   .setPositiveButton(R.string.video_save,new DialogInterface.OnClickListener(){
+                            public void onClick(DialogInterface dialog, int which) {
+                                onDownloadStartNoStream(url, userAgent, contentDisposition, mimetype, contentLength);
+                            }
+                    })
+                   .setNegativeButton(R.string.video_play,new DialogInterface.OnClickListener(){
+                            public void onClick(DialogInterface dialog, int which){
+                                 Intent intent = new Intent(Intent.ACTION_VIEW);
+                                 intent.setDataAndType(Uri.parse(url), mimetype);
+                                 try {
+                                     startActivity(intent);
+                                 } catch (ActivityNotFoundException ex) {
+                                     if (LOGD_ENABLED) {Log.d(LOGTAG, "When http stream play, activity not found for " + mimetype
+                                                     + " over " + Uri.parse(url).getScheme(),ex);
+                                     }
+                                 }
+                            }
+                    }).show();
                 return;
             }
 

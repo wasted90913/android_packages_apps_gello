@@ -303,4 +303,7 @@
     <string name="progress_dialog_setting_wallpaper" msgid="4871900779338536674">"正在设置壁纸..."</string>
     <string name="exit_browser">完全退出</string>
     <string name="website_homepage">主页</string>
+	<string name="http_video_msg">"请选择以下的操作"</string>
+	<string name="video_save">"保存"</string>
+	<string name="video_play">"播放"</string>
 </resources>

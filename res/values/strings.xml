@@ -766,4 +766,7 @@
     <string name="rlz_access_point" translatable="false">Y1</string>
     <string name="exit_browser">Fully exit</string>
     <string name="website_homepage">Homepage</string>
+	<string name="http_video_msg">Please choose a following operation</string>
+	<string name="video_save">Save</string>
+	<string name="video_play">Play</string>
 </resources>

@@ -35,6 +35,9 @@
             android:showAsAction="never"
             android:alphabeticShortcut="n" />
         <item
+            android:id="@+id/manage_feature_permissions_menu_id"
+            android:title="@string/manage_feature_permissions" />
+        <item
             android:id="@+id/incognito_menu_id"
             android:title="@string/new_incognito_tab"
             android:icon="@drawable/ic_new_incognito_holo_dark" />

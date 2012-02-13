@@ -46,6 +46,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
+import android.os.SystemProperties;
 import android.preference.PreferenceActivity;
 import android.provider.Browser;
 import android.provider.BrowserContract;
@@ -111,6 +112,7 @@ public class Controller
     private static final String SEND_APP_ID_EXTRA =
         "android.speech.extras.SEND_APPLICATION_ID_EXTRA";
     private static final String INCOGNITO_URI = "browser:incognito";
+    private static final String PERMISSION_URI = "browser://permissions";
 
     private final static boolean WTA_PERF_LOG =
                             com.android.browser.Browser.WTA_PERF_LOG;
@@ -1473,12 +1475,14 @@ public class Controller
         boolean isHome = false;
         boolean isDesktopUa = false;
         boolean isLive = false;
+        boolean isPermissionEnabled = false;
         if (tab != null) {
             canGoBack = tab.canGoBack();
             canGoForward = tab.canGoForward();
             isHome = mSettings.getHomePage().equals(tab.getUrl());
             isDesktopUa = mSettings.hasDesktopUseragent(tab.getWebView());
             isLive = !tab.isSnapshot();
+            isPermissionEnabled = SystemProperties.getBoolean("proteus.device.api", false);
         }
         final MenuItem back = menu.findItem(R.id.back_menu_id);
         back.setEnabled(canGoBack);
@@ -1497,6 +1501,10 @@ public class Controller
             dest.setIcon(source.getIcon());
         }
         menu.setGroupVisible(R.id.NAV_MENU, isLive);
+
+        final MenuItem managePermission = menu.findItem(R.id.manage_feature_permissions_menu_id);
+        if(managePermission != null)
+            managePermission.setEnabled(isPermissionEnabled);
 
         // decide whether to show the share link option
         PackageManager pm = mActivity.getPackageManager();
@@ -1543,6 +1551,10 @@ public class Controller
             // -- Main menu
             case R.id.new_tab_menu_id:
                 openTabToHomePage();
+                break;
+
+            case R.id.manage_feature_permissions_menu_id:
+                openTabToPermissionSettings();
                 break;
 
             case R.id.incognito_menu_id:
@@ -2290,6 +2302,10 @@ public class Controller
     @Override
     public Tab openTabToHomePage() {
         return openTab(mSettings.getHomePage(), false, true, false);
+    }
+
+    public Tab openTabToPermissionSettings() {
+        return openTab(PERMISSION_URI,false, true, false);
     }
 
     @Override

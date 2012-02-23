@@ -1096,7 +1096,12 @@ public class Controller
                 mActivity.getComponentName().flattenToString());
         intent.putExtra(SEND_APP_ID_EXTRA, false);
         intent.putExtra(RecognizerIntent.EXTRA_WEB_SEARCH_ONLY, true);
-        mActivity.startActivity(intent);
+        try {
+            mActivity.startActivity(intent);
+        } catch (android.content.ActivityNotFoundException ex) {
+          // If no app handles this, do nothing
+          Log.w(LOGTAG, "The intent EXTRA_WEB_SEARCH_ONLY is not handled");
+        }
     }
 
     @Override

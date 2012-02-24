@@ -30,6 +30,7 @@ import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Scroller;
+import android.util.Log;
 
 /**
  * RealViewSwitcher allows users to switch between multiple screens (layouts) in the same way as the Android home screen (Launcher application).
@@ -41,6 +42,8 @@ import android.widget.Scroller;
  * @version 0.1.0
  */
 public class RealViewSwitcher extends ViewGroup {
+
+    private static final String LOGTAG = "RealViewSwitcher";
 
     /**
      * Listener for the event that the RealViewSwitcher switches to a new view.
@@ -272,7 +275,12 @@ public class RealViewSwitcher extends ViewGroup {
 
             // notify observer about screen change
             if (mOnScreenSwitchListener != null)
-                mOnScreenSwitchListener.onScreenSwitched(mCurrentScreen);
+            {
+                if (mCurrentScreen != mNextScreen)
+                    mOnScreenSwitchListener.onScreenSwitched(mCurrentScreen);
+                else
+                    Log.e(LOGTAG, "No screen switch. mCurrentScreen = mNextScreen = " + mCurrentScreen);
+            }
 
             mNextScreen = INVALID_SCREEN;
         }

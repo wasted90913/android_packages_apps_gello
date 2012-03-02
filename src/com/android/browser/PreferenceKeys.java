@@ -85,6 +85,7 @@ public interface PreferenceKeys {
     static final String PREF_ENABLE_QUICK_CONTROLS = "enable_quick_controls";
     static final String PREF_FULLSCREEN = "fullscreen";
     static final String PREF_ENABLE_SLIDE_TAB_TRANSITIONS = "enable_slide_tab_transitions";
+    static final String PREF_ENABLE_WEBGL = "enable_webgl";
 
     // ----------------------
     // Keys for privacy_security_preferences.xml

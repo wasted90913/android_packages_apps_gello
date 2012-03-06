@@ -25,6 +25,8 @@
         android:label="@string/permission_preload_label"
         android:protectionLevel="signatureOrSystem" />
 
+    <!-- Permission for WebAudio -->
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
     <!--proteus: add camera access, audio record and contacts access to browser-->
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <uses-permission android:name="android.permission.CAMERA"/>

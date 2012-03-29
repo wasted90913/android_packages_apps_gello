@@ -52,7 +52,6 @@ public class NavigatorPermissionsPrompt extends LinearLayout {
     private TextView mMessage;
     private Button mShareButton;
     private Button mDontShareButton;
-    private CheckBox mRemember;
     private GeolocationPermissions.Callback mCallback;
     private String mAppId;
     private Vector<String> mFeatures;
@@ -70,7 +69,6 @@ public class NavigatorPermissionsPrompt extends LinearLayout {
         mMessage = (TextView) findViewById(R.id.message);
         mShareButton = (Button) findViewById(R.id.share_button);
         mDontShareButton = (Button) findViewById(R.id.dont_share_button);
-        mRemember = (CheckBox) findViewById(R.id.remember);
 
         final NavigatorPermissionsPrompt me = this;
         mShareButton.setOnClickListener(new View.OnClickListener() {
@@ -101,8 +99,6 @@ public class NavigatorPermissionsPrompt extends LinearLayout {
             featureMsg = featureMsg + features.get(i) + ", ";
         featureMsg = featureMsg + features.get(i);
         setMessage("http".equals(uri.getScheme()) ?  mAppId.substring(7) : mAppId, featureMsg.toString());
-        // The checkbox should always be intially checked.
-        mRemember.setChecked(true);
         showDialog(true);
     }
 
@@ -119,8 +115,7 @@ public class NavigatorPermissionsPrompt extends LinearLayout {
     private void handleButtonClick(boolean allow) {
         showDialog(false);
 
-        boolean remember = mRemember.isChecked();
-        //mCallback.invoke(mFeatures,mAppId, allow, remember);
+        boolean remember = true;
         // Convert features & appid into JSON string and pass as appid
         try {
             JSONArray tArr = new JSONArray();

@@ -1487,7 +1487,7 @@ public class Controller
             isHome = mSettings.getHomePage().equals(tab.getUrl());
             isDesktopUa = mSettings.hasDesktopUseragent(tab.getWebView());
             isLive = !tab.isSnapshot();
-            isPermissionEnabled = SystemProperties.getBoolean("proteus.device.api", false);
+            isPermissionEnabled = SystemProperties.getBoolean("device.api", false);
         }
         final MenuItem back = menu.findItem(R.id.back_menu_id);
         back.setEnabled(canGoBack);

@@ -17,8 +17,11 @@
 package com.android.browser.preferences;
 
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceManager;
+import android.preference.PreferenceScreen;
 
 import com.android.browser.BrowserSettings;
 import com.android.browser.PreferenceKeys;
@@ -32,5 +35,38 @@ public class LabPreferencesFragment extends PreferenceFragment {
         super.onCreate(savedInstanceState);
         // Load the XML preferences file
         addPreferencesFromResource(R.xml.lab_preferences);
+
+        // Slide Transitions and Quick Actions are incompatible. Disabling the
+        // other when one is enabled.
+        CheckBoxPreference slideTransitions = (CheckBoxPreference)
+            findPreference(PreferenceKeys.PREF_ENABLE_SLIDE_TAB_TRANSITIONS);
+
+        CheckBoxPreference quickControls = (CheckBoxPreference)
+            findPreference(PreferenceKeys.PREF_ENABLE_QUICK_CONTROLS);
+
+        if (slideTransitions == null || quickControls == null)
+            return;
+
+        if (slideTransitions.isChecked())
+            quickControls.setEnabled(false);
+        else if (quickControls.isChecked())
+            slideTransitions.setEnabled(false);
+    }
+
+    @Override
+    public boolean onPreferenceTreeClick(PreferenceScreen screen, Preference preference) {
+        PreferenceManager manager = preference.getPreferenceManager();
+        if (PreferenceKeys.PREF_ENABLE_QUICK_CONTROLS.equals(preference.getKey())) {
+            CheckBoxPreference slideTransitions = (CheckBoxPreference)
+                manager.findPreference(PreferenceKeys.PREF_ENABLE_SLIDE_TAB_TRANSITIONS);
+            if (slideTransitions != null)
+                slideTransitions.setEnabled(!((CheckBoxPreference)preference).isChecked());
+        } else if (PreferenceKeys.PREF_ENABLE_SLIDE_TAB_TRANSITIONS.equals(preference.getKey())) {
+            CheckBoxPreference quickControls = (CheckBoxPreference)
+                manager.findPreference(PreferenceKeys.PREF_ENABLE_QUICK_CONTROLS);
+            if (quickControls != null)
+                quickControls.setEnabled(!((CheckBoxPreference)preference).isChecked());
+        }
+        return true;
     }
 }

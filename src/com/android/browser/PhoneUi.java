@@ -13,6 +13,9 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * NOTE: This file has been modified by Sony Mobile Communications AB.
+ * Modifications are licensed under the License.
  */
 
 package com.android.browser;
@@ -778,8 +781,12 @@ public class PhoneUi extends BaseUi implements RealViewSwitcher.OnScreenSwitchLi
     // RealViewSwitcher.OnScreenSwitchListener
     public void onScreenSwitched(int screen) {
         Tab currentTab = mTabControl.getTab(screen);
-        mTabControl.setCurrentTab(currentTab);
-        setActiveTab(currentTab);
+        // When Controller starts it might get delayed and when that happens we
+        // don't have any updated tabs yet.
+        if (currentTab != null) {
+            mTabControl.setCurrentTab(currentTab);
+            setActiveTab(currentTab);
+        }
     }
 
     // RealViewSwitcher.OnScrollStartedListener interface

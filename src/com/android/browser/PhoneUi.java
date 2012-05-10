@@ -68,6 +68,7 @@ public class PhoneUi extends BaseUi implements RealViewSwitcher.OnScreenSwitchLi
     boolean mExtendedMenuOpen;
     boolean mOptionsMenuOpen;
     boolean mAnimating;
+    boolean mOrientationChanged;
 
     /**
      * @param browser
@@ -256,7 +257,12 @@ public class PhoneUi extends BaseUi implements RealViewSwitcher.OnScreenSwitchLi
     public void setActiveTab(final Tab tab) {
         mTitleBar.cancelTitleBarAnimation(true);
         mTitleBar.setSkipTitleBarAnimations(true);
-        super.setActiveTab(tab);
+        // No need to reattach the tab to the content view on orientation
+        // change. We just need to focus and show the URL bar.
+        if (!mOrientationChanged)
+            super.setActiveTab(tab);
+        else
+            mOrientationChanged = false;
         BrowserWebView view = (BrowserWebView) tab.getWebView();
         // TabControl.setCurrentTab has been called before this,
         // so the tab is guaranteed to have a webview
@@ -392,8 +398,10 @@ public class PhoneUi extends BaseUi implements RealViewSwitcher.OnScreenSwitchLi
     @Override
     public void onConfigurationChanged(Configuration config) {
         super.onConfigurationChanged(config);
-        if (isSlideTabTransitionsEnabled())
+        if (isSlideTabTransitionsEnabled()) {
+            mOrientationChanged = true;
             mRealViewSwitcher.orientationChanged(mActivity);
+        }
     }
 
     // menu handling callbacks

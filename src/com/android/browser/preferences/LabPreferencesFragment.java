@@ -36,6 +36,13 @@ public class LabPreferencesFragment extends PreferenceFragment {
         // Load the XML preferences file
         addPreferencesFromResource(R.xml.lab_preferences);
 
+        if (!BrowserSettings.isWebGLAvailable()) {
+            CheckBoxPreference webGL = (CheckBoxPreference)
+                findPreference(PreferenceKeys.PREF_ENABLE_WEBGL);
+            PreferenceScreen screen = getPreferenceScreen();
+            screen.removePreference(webGL);
+        }
+
         // Slide Transitions and Quick Actions are incompatible. Disabling the
         // other when one is enabled.
         CheckBoxPreference slideTransitions = (CheckBoxPreference)

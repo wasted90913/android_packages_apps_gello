@@ -1505,7 +1505,15 @@ public class Controller
             isHome = mSettings.getHomePage().equals(tab.getUrl());
             isDesktopUa = mSettings.hasDesktopUseragent(tab.getWebView());
             isLive = !tab.isSnapshot();
-            isPermissionEnabled = SystemProperties.getBoolean("device.api", false);
+            try {
+                String mDataPath = mActivity.getPackageManager().getApplicationInfo(mActivity.getPackageName(),0).dataDir;
+                File f = new File(mDataPath + "/.dapi");
+                if(f.exists() && f.isDirectory()) {
+                    isPermissionEnabled = true;
+                }
+            } catch(Exception e) {
+                Log.w(LOGTAG, "Caugth exception" + e);
+            }
         }
         final MenuItem back = menu.findItem(R.id.back_menu_id);
         back.setEnabled(canGoBack);

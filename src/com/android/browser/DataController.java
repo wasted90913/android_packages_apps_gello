@@ -17,6 +17,7 @@
 
 package com.android.browser;
 
+import android.database.sqlite.SQLiteDiskIOException;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -146,6 +147,8 @@ public class DataController {
                     handleMessage(mMessageQueue.take());
                 } catch (InterruptedException ex) {
                     break;
+                } catch (SQLiteDiskIOException ex) {
+                    ex.printStackTrace();
                 }
             }
         }

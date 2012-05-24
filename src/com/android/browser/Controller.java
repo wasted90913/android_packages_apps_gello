@@ -35,6 +35,7 @@ import android.content.res.TypedArray;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteDiskIOException;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.net.Uri;
@@ -376,7 +377,11 @@ public class Controller
         public void run() {
             ContentResolver cr = mContext.getContentResolver();
             if (mIds == null || mIds.size() == 0) {
-                cr.delete(Thumbnails.CONTENT_URI, null, null);
+                try {
+                    cr.delete(Thumbnails.CONTENT_URI, null, null);
+                } catch (SQLiteDiskIOException ex) {
+                    ex.printStackTrace();
+                }
             } else {
                 int length = mIds.size();
                 StringBuilder where = new StringBuilder();
@@ -389,7 +394,11 @@ public class Controller
                     }
                 }
                 where.append(")");
-                cr.delete(Thumbnails.CONTENT_URI, where.toString(), null);
+                try {
+                    cr.delete(Thumbnails.CONTENT_URI, where.toString(), null);
+                } catch (SQLiteDiskIOException ex) {
+                    ex.printStackTrace();
+                }
             }
         }
 

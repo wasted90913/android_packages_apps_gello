@@ -2380,6 +2380,7 @@ public class Controller
         Tab tab = null;
         if (mTabControl.canCreateNewTab()) {
             tab = mTabControl.createNewTab(incognito);
+            tab.setIsNewTab(true);
             addTab(tab);
             if (setActive) {
                 setActiveTab(tab);

@@ -143,9 +143,12 @@ public class TitleBar extends RelativeLayout {
         if (mUseQuickControls) {
             mParent.addView(this);
         } else if(mUseSlideTransitions) {
+            // Stop the nav bar from being focused (which may cause the keyboard to pop up).
+            mNavBar.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
             if (getParent() == null)
                 mParent.addView(this);
             setVisibility(VISIBLE);
+            mNavBar.setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
         } else {
             if (!mSkipTitleBarAnimations) {
                 cancelTitleBarAnimation(false);

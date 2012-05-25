@@ -256,6 +256,9 @@ class Tab implements PictureListener {
     static final String USERAGENT = "useragent";
     static final String CLOSEFLAG = "closeOnBack";
 
+    // Was this tab newly created? Used for new tab animation.
+    private boolean mIsNewTab;
+
     // -------------------------------------------------------------------------
 
     /**
@@ -2286,5 +2289,13 @@ class Tab implements PictureListener {
             // sub-resource.
             setSecurityState(SecurityState.SECURITY_STATE_MIXED);
         }
+    }
+
+    public boolean isNewTab() {
+        return mIsNewTab;
+    }
+
+    public void setIsNewTab(boolean isNewTab) {
+        mIsNewTab = isNewTab;
     }
 }

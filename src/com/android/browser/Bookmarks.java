@@ -22,6 +22,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDiskIOException;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -208,8 +209,16 @@ public class Bookmarks {
                 // The Images update will insert if it doesn't exist
                 ContentValues values = new ContentValues();
                 values.put(Images.FAVICON, os.toByteArray());
-                updateImages(cr, originalUrl, values);
-                updateImages(cr, url, values);
+                try {
+                    updateImages(cr, originalUrl, values);
+                } catch (SQLiteDiskIOException ex) {
+                    ex.printStackTrace();
+                }
+                try {
+                    updateImages(cr, url, values);
+                } catch (SQLiteDiskIOException ex) {
+                    ex.printStackTrace();
+                }
                 return null;
             }
 

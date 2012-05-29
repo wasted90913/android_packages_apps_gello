@@ -22,6 +22,7 @@ import android.app.SearchManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDiskIOException;
 import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.os.AsyncTask;
@@ -339,7 +340,11 @@ public class IntentHandler {
             new AsyncTask<Void, Void, Void>() {
                 @Override
                 protected Void doInBackground(Void... unused) {
+                    try {
                         Browser.addSearchUrl(cr, newUrl);
+                    } catch (SQLiteDiskIOException e) {
+                        e.printStackTrace();
+                    }
                     return null;
                 }
             }.execute();

@@ -17,6 +17,8 @@
 
 package com.android.browser;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -29,6 +31,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.PaintDrawable;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -78,6 +81,7 @@ public abstract class BaseUi implements UI {
 
     private static final int MSG_HIDE_TITLEBAR = 1;
     public static final int HIDE_TITLEBAR_DELAY = 1500; // in ms
+    private static final long CUSTOM_VIEW_FADE_ANIMATION_DURATION = 750L; // in ms
 
     Activity mActivity;
     UiController mUiController;
@@ -113,6 +117,10 @@ public abstract class BaseUi implements UI {
     protected TitleBar mTitleBar;
     private NavigationBarBase mNavigationBar;
 
+    private int mWindowFrameYOffset;
+    private boolean mIsEnteringFullscreen;
+    private boolean mIsExitingFullscreen;
+
     public BaseUi(Activity browser, UiController controller) {
         mActivity = browser;
         mUiController = controller;
@@ -140,6 +148,8 @@ public abstract class BaseUi implements UI {
         mTitleBar.setProgress(100);
         mNavigationBar = mTitleBar.getNavigationBar();
         mUrlBarAutoShowManager = new UrlBarAutoShowManager(this);
+        mIsEnteringFullscreen = false;
+        mIsExitingFullscreen = false;
     }
 
     private void cancelStopToast() {
@@ -519,24 +529,65 @@ public abstract class BaseUi implements UI {
         mFullscreenContainer = new FullscreenHolder(mActivity);
         mFullscreenContainer.addView(view, COVER_SCREEN_PARAMS);
         decor.addView(mFullscreenContainer, COVER_SCREEN_PARAMS);
+
+        Rect rect = new Rect();
+        mActivity.getWindow().getDecorView().getWindowVisibleDisplayFrame(rect);
+        mWindowFrameYOffset = rect.top;
+
+        mFullscreenContainer.setAlpha(0.0f);
+
+        // Show fade in animation when custom view is being shown
+        mFullscreenContainer.animate().setListener(new AnimatorListenerAdapter() {
+            public void onAnimationEnd(Animator animation) {
+                setFullscreen(true);
+                mIsEnteringFullscreen = false;
+            }
+        });
+
+        mFullscreenContainer.animate().setDuration(CUSTOM_VIEW_FADE_ANIMATION_DURATION);
+        mIsEnteringFullscreen = true;
+        mFullscreenContainer.animate().alpha(1.0f);
+
         mCustomView = view;
-        setFullscreen(true);
         mCustomViewCallback = callback;
         mActivity.setRequestedOrientation(requestedOrientation);
     }
 
     @Override
     public void onHideCustomView() {
-        if (mCustomView == null)
+        if (mCustomView == null || mIsExitingFullscreen)
             return;
-        setFullscreen(false);
-        FrameLayout decor = (FrameLayout) mActivity.getWindow().getDecorView();
-        decor.removeView(mFullscreenContainer);
-        mFullscreenContainer = null;
-        mCustomView = null;
+
+        mIsExitingFullscreen = true;
         mCustomViewCallback.onCustomViewHidden();
-        // Show the content view.
-        mActivity.setRequestedOrientation(mOriginalOrientation);
+
+        if (mIsEnteringFullscreen) {
+            mFullscreenContainer.animate().cancel();
+            setFullscreen(false);
+            finishExitingFullscreen();
+        } else {
+            // Show fade out animation when custom view is being hidden
+            mFullscreenContainer.animate().setListener(new AnimatorListenerAdapter() {
+                public void onAnimationEnd(Animator animation) {
+                    finishExitingFullscreen();
+                }
+            });
+
+            setFullscreen(false);
+
+            mCustomView.animate().setDuration(CUSTOM_VIEW_FADE_ANIMATION_DURATION);
+            mFullscreenContainer.animate().setDuration(CUSTOM_VIEW_FADE_ANIMATION_DURATION);
+
+            // In HTML5 video fullscreen to inline use case, the screen location of
+            // inline video is calculated when the status bar is hidden, while the
+            // animation needs to finish at where the inline video is when the status
+            // bar is shown. Translate mCustomView vertically by mWindowFrameYOffset
+            // to make sure HTML5 video animated transition finishes at the correct
+            // location.
+            mCustomView.animate().translationY(mWindowFrameYOffset);
+
+            mFullscreenContainer.animate().alpha(0.0f);
+        }
     }
 
     @Override
@@ -839,5 +890,15 @@ public abstract class BaseUi implements UI {
             return true;
         }
 
+    }
+
+    private void finishExitingFullscreen() {
+        FrameLayout decor = (FrameLayout) mActivity.getWindow().getDecorView();
+        decor.removeView(mFullscreenContainer);
+        mFullscreenContainer = null;
+        mCustomView = null;
+        // Show the content view.
+        mActivity.setRequestedOrientation(mOriginalOrientation);
+        mIsExitingFullscreen = false;
     }
 }

@@ -665,12 +665,12 @@ public class BrowserActivity extends Activity
      * was identified as plain search terms and not URL/shortcut.
      * @return true if the request was handled and web search activity was launched, false if not.
      */
-    private boolean handleWebSearchRequest(String inUrl, Bundle appData, String extraData) {
+    private boolean handleWebSearchRequest(String inUrl, final Bundle appData, final String extraData) {
         if (inUrl == null) return false;
 
         // In general, we shouldn't modify URL from Intent.
         // But currently, we get the user-typed URL from search box as well.
-        String url = fixUrl(inUrl).trim();
+        final String url = fixUrl(inUrl).trim();
 
         // URLs are handled by the regular flow of control, so
         // return early.
@@ -689,9 +689,16 @@ public class BrowserActivity extends Activity
             }
         }.execute();
 
-        SearchEngine searchEngine = mSettings.getSearchEngine();
+        final SearchEngine searchEngine = mSettings.getSearchEngine();
         if (searchEngine == null) return false;
-        searchEngine.startSearch(this, url, appData, extraData);
+
+        // delay to start search. Search intent should be processed after this activity is finished.
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                searchEngine.startSearch(BrowserActivity.this, url, appData, extraData);
+            }
+        });
 
         return true;
     }

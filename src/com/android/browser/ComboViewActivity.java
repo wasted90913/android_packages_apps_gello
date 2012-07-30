@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2011 The Android Open Source Project
+ * Copyright (c) 2011, 2012 Code Aurora Forum. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +32,13 @@ import android.view.MenuItem;
 import com.android.browser.UI.ComboViews;
 
 import java.util.ArrayList;
+
+import android.util.Log;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo.State;
+import java.util.List;
+import java.lang.Exception.*;
+import java.lang.reflect.*;
 
 public class ComboViewActivity extends Activity implements CombinedBookmarksCallbacks {
 
@@ -82,9 +90,27 @@ public class ComboViewActivity extends Activity implements CombinedBookmarksCall
         } else {
             switch (startingView) {
             case Bookmarks:
+                try {
+                    String pluginJar = "/system/framework/modemwarmup.jar";
+                    dalvik.system.PathClassLoader pluginClassLoader=null;
+                    pluginClassLoader = new dalvik.system.PathClassLoader(pluginJar,ClassLoader.getSystemClassLoader());
+                    Class type = Class.forName("com.android.qualcomm.modemwarmup.ModemWarmup",true,pluginClassLoader);
+                    type.getMethod("warmModem").invoke(type.newInstance());
+                } catch (Throwable e) {
+                    Log.v("netstack: ", "Failed to load warmModem symbol in modemwarmup.jar");
+                }
                 mViewPager.setCurrentItem(0);
                 break;
             case History:
+                try {
+                    String pluginJar = "/system/framework/modemwarmup.jar";
+                    dalvik.system.PathClassLoader pluginClassLoader=null;
+                    pluginClassLoader = new dalvik.system.PathClassLoader(pluginJar,ClassLoader.getSystemClassLoader());
+                    Class type = Class.forName("com.android.qualcomm.modemwarmup.ModemWarmup",true,pluginClassLoader);
+                    type.getMethod("warmModem").invoke(type.newInstance());
+                } catch (Throwable e) {
+                    Log.v("netstack: ", "Failed to load warmModem symbol in modemwarmup.jar");
+                }
                 mViewPager.setCurrentItem(1);
                 break;
             case Snapshots:

@@ -345,7 +345,7 @@ public class PhoneUi extends BaseUi implements RealViewSwitcher.OnScreenSwitchLi
         // Attach the WebView to the container and then attach the
         // container to the RVS.
         FrameLayout wrapper =
-                (FrameLayout) mTabContainer.findViewById(R.id.webview_wrapper);
+            (FrameLayout) mTabContainer.findViewById(R.id.webview_wrapper);
         ViewGroup parent = (ViewGroup) mainView.getParent();
         if (parent != wrapper) {
             if (parent != null)
@@ -355,12 +355,19 @@ public class PhoneUi extends BaseUi implements RealViewSwitcher.OnScreenSwitchLi
         int tabPosition = mTabControl.getTabPosition(tab);
         boolean isFirstTab = mTabControl.getTabCount() == 1;
 
-        if (mRealViewSwitcher.getChildAt(tabPosition) == null) {
-            // When we resume, the container will already be attached to the content view.
-            parent = (ViewGroup) mTabContainer.getParent();
-            if (parent != null)
-                parent.removeView(mTabContainer);
+        // When we resume, the container will already be attached to the content view.
+        parent = (ViewGroup) mTabContainer.getParent();
 
+        // Prevent unnecessary view removal.
+        if (mRealViewSwitcher == parent) {
+            mUiController.attachSubWindow(tab);
+            return;
+        }
+
+        if (parent != null)
+            parent.removeView(mTabContainer);
+
+        if (mRealViewSwitcher.getChildAt(tabPosition) == null) {
             if (mNewTabTransition == null) {
                 mNewTabTransition = new LayoutTransition();
                 mNewTabTransition.setStartDelay(LayoutTransition.APPEARING, 0);
@@ -375,12 +382,8 @@ public class PhoneUi extends BaseUi implements RealViewSwitcher.OnScreenSwitchLi
 
             if (!tab.isNewTab() || isFirstTab)
                 mRealViewSwitcher.addView(mTabContainer);
-        } else {
-            parent = (ViewGroup) mTabContainer.getParent();
-            if (parent != null)
-                parent.removeView(mTabContainer);
-            if (!tab.isNewTab() || isFirstTab)
-                mRealViewSwitcher.addView(mTabContainer, tabPosition);
+        } else if (!tab.isNewTab() || isFirstTab) {
+            mRealViewSwitcher.addView(mTabContainer, tabPosition);
         }
 
         if (tab.isNewTab() && !isFirstTab) {

@@ -18,8 +18,10 @@
 package com.android.browser;
 
 import android.animation.Animator;
+import android.animation.AnimatorInflater;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
+import android.animation.LayoutTransition;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Context;
@@ -52,7 +54,8 @@ import java.util.List;
  * Ui for regular phone screen sizes
  */
 public class PhoneUi extends BaseUi implements RealViewSwitcher.OnScreenSwitchListener,
-                                               RealViewSwitcher.OnScrollStartedListener {
+                                               RealViewSwitcher.OnScrollStartedListener,
+                                               Animator.AnimatorListener {
 
     private static final String LOGTAG = "PhoneUi";
     private static final int MSG_INIT_NAVSCREEN = 100;
@@ -64,10 +67,12 @@ public class PhoneUi extends BaseUi implements RealViewSwitcher.OnScreenSwitchLi
     private int mActionBarHeight;
     private RealViewSwitcher mRealViewSwitcher;
     private boolean mSlideTabTransitionsEnabled;
+    private LayoutTransition mNewTabTransition;
+    private View mTabContainer;
+    private View mNewTabView;
 
     boolean mExtendedMenuOpen;
     boolean mOptionsMenuOpen;
-    boolean mAnimating;
     boolean mOrientationChanged;
 
     /**
@@ -83,6 +88,8 @@ public class PhoneUi extends BaseUi implements RealViewSwitcher.OnScreenSwitchLi
                 com.android.internal.R.attr.actionBarSize, heightValue, true);
         mActionBarHeight = TypedValue.complexToDimensionPixelSize(heightValue.data,
                 browser.getResources().getDisplayMetrics());
+
+        mContentView.setBackgroundDrawable(browser.getResources().getDrawable(R.drawable.browser_background_holo));
 
         if (BrowserSettings.getInstance().useSlideTabTransitions())
             setupSlideTabTransitions();
@@ -257,6 +264,14 @@ public class PhoneUi extends BaseUi implements RealViewSwitcher.OnScreenSwitchLi
     public void setActiveTab(final Tab tab) {
         mTitleBar.cancelTitleBarAnimation(true);
         mTitleBar.setSkipTitleBarAnimations(true);
+
+        if (mSlideTabTransitionsEnabled) {
+            if (tab == mActiveTab) {
+                showTitleBarForDuration();
+                return;
+            }
+        }
+
         // No need to reattach the tab to the content view on orientation
         // change. We just need to focus and show the URL bar.
         if (!mOrientationChanged)
@@ -299,7 +314,8 @@ public class PhoneUi extends BaseUi implements RealViewSwitcher.OnScreenSwitchLi
         tab.getTopWindow().requestFocus();
         mTitleBar.setSkipTitleBarAnimations(false);
 
-        if (isSlideTabTransitionsEnabled()) {
+        // The new tab screen will be set in onAnimationEnd.
+        if (isSlideTabTransitionsEnabled() && !tab.isNewTab()) {
             int tabPosition = mTabControl.getTabPosition(tab);
             // The setActiveTab call may have been triggered by a RVS scroll.
             if (mRealViewSwitcher.getCurrentScreen() != tabPosition)
@@ -316,44 +332,70 @@ public class PhoneUi extends BaseUi implements RealViewSwitcher.OnScreenSwitchLi
             super.attachTabToContentView(tab);
             return;
         }
+
         if ((tab == null) || (tab.getWebView() == null))
             return;
 
-        View container = tab.getViewContainer();
+        mTabContainer = tab.getViewContainer();
         WebView mainView  = tab.getWebView();
 
         // Attach the WebView to the container and then attach the
         // container to the RVS.
         FrameLayout wrapper =
-                (FrameLayout) container.findViewById(R.id.webview_wrapper);
+                (FrameLayout) mTabContainer.findViewById(R.id.webview_wrapper);
         ViewGroup parent = (ViewGroup) mainView.getParent();
         if (parent != wrapper) {
-            if (parent != null) {
-                Log.w(LOGTAG, "mMainView already has a parent in"
-                        + " attachTabToContentView!");
+            if (parent != null)
                 parent.removeView(mainView);
-            }
             wrapper.addView(mainView);
-        } else {
-            Log.w(LOGTAG, "mMainView is already attached to wrapper in"
-                    + " attachTabToContentView!");
         }
         int tabPosition = mTabControl.getTabPosition(tab);
+        boolean isFirstTab = mTabControl.getTabCount() == 1;
 
         if (mRealViewSwitcher.getChildAt(tabPosition) == null) {
-            parent = (ViewGroup)container.getParent();
             // When we resume, the container will already be attached to the content view.
-            if (parent != null) {
-                Log.w(LOGTAG, "container is already attached to " + parent);
-                parent.removeView(container);
-            }
-            mRealViewSwitcher.addView(container);
-        } else {
-             Log.w(LOGTAG, "There's already a RVS child at " + tabPosition);
-            parent = (ViewGroup)container.getParent();
+            parent = (ViewGroup) mTabContainer.getParent();
             if (parent != null)
-                parent.removeView(container);
-            mRealViewSwitcher.addView(container, tabPosition);
+                parent.removeView(mTabContainer);
+
+            if (mNewTabTransition == null) {
+                mNewTabTransition = new LayoutTransition();
+                mNewTabTransition.setStartDelay(LayoutTransition.APPEARING, 0);
+                mNewTabTransition.setDuration(300);
+                AnimatorSet animatorSet = (AnimatorSet) AnimatorInflater.loadAnimator(getActivity(), R.anim.new_tab);
+                mNewTabTransition.setAnimator(LayoutTransition.CHANGE_APPEARING, null);
+                mNewTabTransition.setAnimator(LayoutTransition.CHANGE_DISAPPEARING, null);
+                mNewTabTransition.setAnimator(LayoutTransition.APPEARING, animatorSet);
+                mNewTabTransition.setAnimator(LayoutTransition.DISAPPEARING, null);
+                animatorSet.addListener(this);
+            }
+
+            if (!tab.isNewTab() || isFirstTab)
+                mRealViewSwitcher.addView(mTabContainer);
+        } else {
+            parent = (ViewGroup) mTabContainer.getParent();
+            if (parent != null)
+                parent.removeView(mTabContainer);
+            if (!tab.isNewTab() || isFirstTab)
+                mRealViewSwitcher.addView(mTabContainer, tabPosition);
+        }
+
+        if (tab.isNewTab() && !isFirstTab) {
+            ViewGroup rvsParent = (ViewGroup)mRealViewSwitcher.getParent();
+            rvsParent.setLayoutTransition(mNewTabTransition);
+            if (mNewTabView == null) {
+                // Use an opaque view to do the animation.
+                mNewTabView = new View(mActivity);
+                mNewTabView.setBackgroundColor(0xFFFFFFFF);
+            }
+
+            mRealViewSwitcher.setVisibility(View.INVISIBLE);
+            parent = (ViewGroup)mNewTabView.getParent();
+            if (parent != null) {
+                parent.removeView(mNewTabView);
+            }
+            rvsParent.addView(mNewTabView);
+            rvsParent.setLayoutTransition(null);
         }
 
         mUiController.attachSubWindow(tab);
@@ -740,12 +782,52 @@ public class PhoneUi extends BaseUi implements RealViewSwitcher.OnScreenSwitchLi
         setActiveTab(currentTab);
     }
 
-    // RealViewSwitcher.OnScrollStartedListener
+    // RealViewSwitcher.OnScrollStartedListener interface
+
     public void onScrollStarted() {
         if (mRealViewSwitcher.getChildCount() == 1)
             return;
 
         removeTabFromContentView(getActiveTab());
+    }
+
+    // Animator.AnimatorListener interface
+
+    @Override
+    public void onAnimationStart(Animator animation) {
+    }
+
+    @Override
+    public void onAnimationEnd(Animator animation) {
+        if (!isSlideTabTransitionsEnabled())
+            return;
+
+        // When the FrameLayout removes a child it may trigger an onAnimationEnd if it has a LayoutTransition.
+        mContentView.setLayoutTransition(null);
+        ViewGroup parent = (ViewGroup)mTabContainer.getParent();
+        if (parent != null)
+            parent.removeView(mTabContainer);
+
+        parent = (ViewGroup)mNewTabView.getParent();
+        if (parent != null)
+            parent.removeView(mNewTabView);
+
+        int tabPosition = mTabControl.getCurrentPosition();
+        // At the end of the new tab animation, add the tab to the RealViewSwitcher.
+        mRealViewSwitcher.addView(mTabContainer, tabPosition);
+        if (mRealViewSwitcher.getCurrentScreen() != tabPosition)
+            mRealViewSwitcher.setCurrentScreen(tabPosition);
+
+        mTabControl.getCurrentTab().setIsNewTab(false);
+        mRealViewSwitcher.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onAnimationCancel(Animator animation) {
+    }
+
+    @Override
+    public void onAnimationRepeat(Animator animation) {
     }
 
     static class AnimScreen {

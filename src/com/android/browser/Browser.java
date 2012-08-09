@@ -19,6 +19,7 @@ package com.android.browser;
 import android.app.Application;
 import android.util.Log;
 import android.webkit.CookieSyncManager;
+import android.os.SystemProperties;
 
 public class Browser extends Application { 
 
@@ -29,6 +30,9 @@ public class Browser extends Application {
 
     // Set to true to enable extra debug logging.
     final static boolean LOGD_ENABLED = true;
+
+    // Set to true to enable pageload measurements
+    static boolean WTA_PERF_LOG = false;
 
     @Override
     public void onCreate() {
@@ -41,7 +45,9 @@ public class Browser extends Application {
         CookieSyncManager.createInstance(this);
         BrowserSettings.initialize(getApplicationContext());
         Preloader.initialize(getApplicationContext());
+        if (SystemProperties.getBoolean("wta.perf.logging", false)){
+           WTA_PERF_LOG = true;
+        }
     }
 
 }
-

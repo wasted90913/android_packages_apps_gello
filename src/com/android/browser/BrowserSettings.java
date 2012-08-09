@@ -121,6 +121,7 @@ class BrowserSettings extends Observable {
     private boolean tracing = false;
     private boolean lightTouch = false;
     private boolean navDump = false;
+    private boolean preferencesChanged = false;
 
     // By default the error console is shown once the user navigates to about:debug.
     // The setting can be then toggled from the settings menu.
@@ -510,6 +511,14 @@ class BrowserSettings extends Observable {
 
     public boolean isNavDump() {
         return navDump;
+    }
+
+    public boolean isPreferencesChanged() {
+        return preferencesChanged;
+    }
+
+    public void setPreferencesChanged() {
+        preferencesChanged = true;
     }
 
     public boolean showDebugSettings() {

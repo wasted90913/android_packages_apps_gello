@@ -160,13 +160,16 @@ public class BrowserPreferencesPage extends PreferenceActivity
             }
         } else if (pref.getKey().equals(BrowserSettings.PREF_TEXT_SIZE)) {
             pref.setSummary(getVisualTextSizeName((String) objValue));
+            BrowserSettings.getInstance().setPreferencesChanged();
             return true;
         } else if (pref.getKey().equals(BrowserSettings.PREF_DEFAULT_ZOOM)) {
             pref.setSummary(getVisualDefaultZoomName((String) objValue));
+            BrowserSettings.getInstance().setPreferencesChanged();
             return true;
         } else if (pref.getKey().equals(
                 BrowserSettings.PREF_DEFAULT_TEXT_ENCODING)) {
             pref.setSummary((String) objValue);
+            BrowserSettings.getInstance().setPreferencesChanged();
             return true;
         } else if (pref.getKey().equals(BrowserSettings.PREF_CLEAR_HISTORY)
                 && ((Boolean) objValue).booleanValue() == true) {

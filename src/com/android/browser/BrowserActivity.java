@@ -104,6 +104,7 @@ import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebHistoryItem;
 import android.webkit.WebIconDatabase;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -1462,6 +1463,9 @@ public class BrowserActivity extends Activity
 
             case R.id.back_menu_id:
                 getTopWindow().goBack();
+                if (mSettings.isPreferencesChanged()) {
+                    refreshTextSize(getTopWindow());
+                }
                 break;
 
             case R.id.forward_menu_id:
@@ -2204,6 +2208,9 @@ public class BrowserActivity extends Activity
         WebView w = current.getWebView();
         if (w.canGoBack()) {
             w.goBack();
+            if (mSettings.isPreferencesChanged()) {
+                refreshTextSize(w);
+            }
         } else {
             // Check to see if we are closing a window that was created by
             // another window. If so, we switch back to that window.
@@ -2313,6 +2320,9 @@ public class BrowserActivity extends Activity
                         if (subwindow != null) {
                             if (subwindow.canGoBack()) {
                                 subwindow.goBack();
+                                if (mSettings.isPreferencesChanged()) {
+                                    refreshTextSize(subwindow);
+                                }
                             } else {
                                 dismissSubWindow(mTabControl.getCurrentTab());
                             }
@@ -4211,5 +4221,25 @@ public class BrowserActivity extends Activity
             return uri;
         }
         return uri.buildUpon().appendQueryParameter("rlz", rlz).build();
+    }
+
+    // FIXME: In order to make text size effective in cached historical pages,
+    // text size is set to a temp value, then set to its original value.
+    private void refreshTextSize(final WebView wv) {
+        final WebSettings ws = wv.getSettings();
+        final WebSettings.TextSize ts = ws.getTextSize();
+        WebSettings.TextSize tmpTextSize;
+        if (ts == WebSettings.TextSize.NORMAL) {
+            tmpTextSize = WebSettings.TextSize.SMALLER;
+        } else {
+            tmpTextSize = WebSettings.TextSize.NORMAL;
+        }
+        ws.setTextSize(tmpTextSize);
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                ws.setTextSize(ts);
+            }
+        }, 100);
     }
 }

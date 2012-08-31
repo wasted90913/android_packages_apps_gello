@@ -1,6 +1,5 @@
 /*
  * Copyright (C) 2011 The Android Open Source Project
- * Copyright (c) 2012, Code Aurora Forum. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,16 +45,6 @@ public class BandwidthPreferencesFragment extends PreferenceFragment {
                     PreferenceKeys.PREF_DATA_PRELOAD);
             if (preload != null) {
                 preload.setValue(BrowserSettings.getInstance().getDefaultPreloadSetting());
-            }
-        }
-
-        if (!getPreferenceScreen().getSharedPreferences()
-                .contains(PreferenceKeys.PREF_VIDEO_PRELOAD)) {
-            // set default value for preload setting
-            ListPreference preload = (ListPreference) getPreferenceScreen().findPreference(
-                    PreferenceKeys.PREF_VIDEO_PRELOAD);
-            if (preload != null) {
-                preload.setValue(BrowserSettings.getInstance().getDefaultVideoPreloadSetting());
             }
         }
     }

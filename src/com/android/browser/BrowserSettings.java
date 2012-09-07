@@ -878,6 +878,22 @@ public class BrowserSettings implements OnSharedPreferenceChangeListener,
         return mPrefs.getString(PREF_DATA_PRELOAD, getDefaultPreloadSetting());
     }
 
+    public String getVideoPreloadOnWifiOnlyPreferenceString() {
+        return mContext.getResources().getString(R.string.pref_video_preload_value_wifi_only);
+    }
+
+    public String getVideoPreloadAlwaysPreferenceString() {
+        return mContext.getResources().getString(R.string.pref_video_preload_value_always);
+    }
+
+    public String getDefaultVideoPreloadSetting() {
+        return mContext.getResources().getString(R.string.pref_video_preload_default_value);
+    }
+
+    public String getVideoPreloadEnabled() {
+        return mPrefs.getString(PREF_VIDEO_PRELOAD, getDefaultVideoPreloadSetting());
+    }
+
     private static void setIsWebGLAvailable(boolean available) {
         sWebGLAvailable = available;
     }

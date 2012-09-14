@@ -28,7 +28,7 @@ import com.android.browser.R;
 
 public class FontSizePreview extends WebViewPreview {
 
-    static final String HTML_FORMAT = "<!DOCTYPE html><html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><style type=\"text/css\">p { margin: 2px auto;}</style><body><p style=\"font-size: 4pt\">%s</p><p style=\"font-size: 8pt\">%s</p><p style=\"font-size: 10pt\">%s</p><p style=\"font-size: 14pt\">%s</p><p style=\"font-size: 18pt\">%s</p></body></html>";
+    static final String HTML_FORMAT = "<!DOCTYPE html><html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><style type=\"text/css\">p { margin: 2px auto;}</style><body style=\"font-size:1em\"><p style=\"font-size: 0.3em\">%s</p><p style=\"font-size: 0.65em\">%s</p><p style=\"font-size: 0.8em\">%s</p><p style=\"font-size: 1.2em\">%s</p><p style=\"font-size: 1.5em\">%s</p></body></html>";
 
     String mHtml;
 

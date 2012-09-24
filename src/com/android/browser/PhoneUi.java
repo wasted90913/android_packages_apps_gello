@@ -76,7 +76,6 @@ public class PhoneUi extends BaseUi implements RealViewSwitcher.OnScreenSwitchLi
 
     boolean mExtendedMenuOpen;
     boolean mOptionsMenuOpen;
-    boolean mOrientationChanged;
 
     /**
      * @param browser
@@ -275,12 +274,8 @@ public class PhoneUi extends BaseUi implements RealViewSwitcher.OnScreenSwitchLi
             }
         }
 
-        // No need to reattach the tab to the content view on orientation
-        // change. We just need to focus and show the URL bar.
-        if (!mOrientationChanged)
-            super.setActiveTab(tab);
-        else
-            mOrientationChanged = false;
+        super.setActiveTab(tab);
+
         BrowserWebView view = (BrowserWebView) tab.getWebView();
         // TabControl.setCurrentTab has been called before this,
         // so the tab is guaranteed to have a webview
@@ -446,10 +441,8 @@ public class PhoneUi extends BaseUi implements RealViewSwitcher.OnScreenSwitchLi
     @Override
     public void onConfigurationChanged(Configuration config) {
         super.onConfigurationChanged(config);
-        if (isSlideTabTransitionsEnabled()) {
-            mOrientationChanged = true;
+        if (isSlideTabTransitionsEnabled())
             mRealViewSwitcher.orientationChanged(mActivity);
-        }
     }
 
     // menu handling callbacks
@@ -822,11 +815,13 @@ public class PhoneUi extends BaseUi implements RealViewSwitcher.OnScreenSwitchLi
         if (parent != null)
             parent.removeView(mNewTabView);
 
-        int tabPosition = mTabControl.getCurrentPosition();
         // At the end of the new tab animation, add the tab to the RealViewSwitcher.
-        mRealViewSwitcher.addView(mTabContainer, tabPosition);
-        if (mRealViewSwitcher.getCurrentScreen() != tabPosition)
-            mRealViewSwitcher.setCurrentScreen(tabPosition);
+        mRealViewSwitcher.addView(mTabContainer);
+
+        int childCount = mRealViewSwitcher.getChildCount();
+
+        if (mRealViewSwitcher.getCurrentScreen() != (childCount - 1))
+            mRealViewSwitcher.setCurrentScreen(childCount - 1);
 
         mTabControl.getCurrentTab().setIsNewTab(false);
         mRealViewSwitcher.setVisibility(View.VISIBLE);

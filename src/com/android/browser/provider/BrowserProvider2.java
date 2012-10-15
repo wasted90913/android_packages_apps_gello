@@ -35,6 +35,7 @@ import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
+import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import android.provider.Browser;
@@ -65,8 +66,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashMap;
+import android.util.Log;
 
 public class BrowserProvider2 extends SQLiteContentProvider {
+
+    private static final String LOGTAG = "BrowserProvider2";
 
     public static final String PARAM_GROUP_BY = "groupBy";
     public static final String PARAM_ALLOW_EMPTY_ACCOUNTS = "allowEmptyAccounts";
@@ -1153,9 +1157,14 @@ public class BrowserProvider2 extends SQLiteContentProvider {
                     Bookmarks.IS_DELETED + "=0 AND " + Bookmarks.IS_FOLDER + "=0");
 
         }
-        Cursor c = mOpenHelper.getReadableDatabase().query(TABLE_BOOKMARKS_JOIN_HISTORY,
+        Cursor c = null;
+        try {
+            c = mOpenHelper.getReadableDatabase().query(TABLE_BOOKMARKS_JOIN_HISTORY,
                 SUGGEST_PROJECTION, selection, selectionArgs, null, null,
                 null, null);
+        } catch (SQLiteException e) {
+            Log.e(LOGTAG, "Error query with table bookmarks_join_history: " + e);
+        }
 
         return new SuggestionsCursor(c);
     }

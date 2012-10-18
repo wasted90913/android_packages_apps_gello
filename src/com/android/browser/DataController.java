@@ -295,8 +295,12 @@ public class DataController {
             ContentResolver cr = mContext.getContentResolver();
             ContentValues values = new ContentValues();
             values.put(History.TITLE, title);
-            cr.update(History.CONTENT_URI, values, History.URL + "=?",
+            try {
+                cr.update(History.CONTENT_URI, values, History.URL + "=?",
                     new String[] { url });
+            } catch (SQLiteException e) {
+                 Log.e(LOGTAG, "Error update History title: " + e);
+            }
         }
     }
 }

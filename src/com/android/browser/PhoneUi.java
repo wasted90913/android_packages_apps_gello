@@ -1,6 +1,9 @@
 /*
+ * Copyright (c) 2011, 2012, The Linux Foundation. All rights reserved.
+ * Not a Contribution, Apache license notifications and license are retained
+ * for attribution purposes only.
+ *
  * Copyright (C) 2010 The Android Open Source Project
- * Copyright (c) 2011, Code Aurora Forum. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -431,11 +434,25 @@ public class PhoneUi extends BaseUi implements RealViewSwitcher.OnScreenSwitchLi
             super.removeTab(tab);
             return;
         }
-        // Tab is being closed; remove container from the RVS.
+
+        // Removing the Tab from the UI should mirror the logic of removal from
+        // the TabControl.
+
         View container = tab.getViewContainer();
+
+        // Grab the current tab before modifying the list.
+        View current = mRealViewSwitcher.getChildAt(mTabControl.getCurrentPosition());
+
+        // Tab is being closed; remove container from the RVS.
         mRealViewSwitcher.removeView(container);
-        if (tab == mActiveTab)
+
+        if (tab == mActiveTab) {
             mActiveTab = null;
+        } else {
+            // If a tab that is earlier in the list gets removed, the current
+            // index no longer points to the correct tab.
+            mRealViewSwitcher.setCurrentScreen(mRealViewSwitcher.indexOfChild(current));
+        }
     }
 
     @Override

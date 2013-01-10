@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2010 Marc Reichelt
- * Copyright (c) 2011, Code Aurora Forum. All rights reserved.
+ * Copyright (c) 2011, The Linux Foundation. All rights reserved.
  *
  * Work derived from Workspace.java of the Launcher application
  *  see http://android.git.kernel.org/?p=platform/packages/apps/Launcher.git

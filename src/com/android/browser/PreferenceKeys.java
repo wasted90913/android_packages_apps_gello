@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2011 The Android Open Source Project
+ * Copyright (c) 2012-2013, The Linux Foundation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -106,6 +107,7 @@ public interface PreferenceKeys {
     static final String PREF_DATA_PRELOAD = "preload_when";
     static final String PREF_LINK_PREFETCH = "link_prefetch_when";
     static final String PREF_LOAD_IMAGES = "load_images";
+    static final String PREF_VIDEO_PLAYBACK = "video_playback";
 
     // ----------------------
     // Keys for browser recovery

@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2011 The Android Open Source Project
+ * Copyright (c) 2012-2013, The Linux Foundation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -279,6 +280,7 @@ public class BrowserSettings implements OnSharedPreferenceChangeListener,
         settings.setAutoFillProfile(getAutoFillProfile());
         setIsWebGLAvailable(settings.isWebGLAvailable());
         settings.setWebGLEnabled(isWebGLAvailable() && isWebGLEnabled());
+        settings.setMediaPlaybackRequiresUserGesture(!videoPlayback());
 
         String ua = mCustomUserAgents.get(settings);
         if (ua != null) {
@@ -699,6 +701,10 @@ public class BrowserSettings implements OnSharedPreferenceChangeListener,
 
     public boolean loadImages() {
         return mPrefs.getBoolean(PREF_LOAD_IMAGES, true);
+    }
+
+    public boolean videoPlayback() {
+        return mPrefs.getBoolean(PREF_VIDEO_PLAYBACK, true);
     }
 
     public String getDefaultTextEncoding() {

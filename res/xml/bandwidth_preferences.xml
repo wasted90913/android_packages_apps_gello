@@ -38,4 +38,10 @@
         android:title="@string/pref_content_load_images"
         android:summary="@string/pref_content_load_images_summary" />
 
+    <CheckBoxPreference
+        android:key="video_playback"
+        android:defaultValue="true"
+        android:title="@string/pref_content_video_playback"
+        android:summary="@string/pref_content_video_playback_summary" />
+
 </PreferenceScreen>

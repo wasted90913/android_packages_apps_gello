@@ -292,6 +292,10 @@
     <string name="pref_content_load_images">Load images</string>
     <!-- Settings label -->
     <string name="pref_content_load_images_summary">Display images on web pages</string>
+     <!-- Settings label -->
+    <string name="pref_content_video_playback">Video playback</string>
+    <!-- Settings label -->
+    <string name="pref_content_video_playback_summary">Allow video playback without user gesture</string>
     <!-- Settings label [CHAR LIMIT=30] -->
     <string name="pref_content_block_popups">Block pop-ups</string>
     <!-- Settings label -->

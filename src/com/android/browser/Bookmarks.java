@@ -35,6 +35,7 @@ import android.webkit.WebIconDatabase;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
+import android.database.sqlite.SQLiteFullException;
 
 /**
  *  This class is purely to have a common place for adding/deleting bookmarks.
@@ -218,7 +219,11 @@ public class Bookmarks {
                 String iurl = removeQuery(url);
                 if (!TextUtils.isEmpty(iurl)) {
                     values.put(Images.URL, iurl);
-                    cr.update(BrowserContract.Images.CONTENT_URI, values, null, null);
+                    try {
+                        cr.update(BrowserContract.Images.CONTENT_URI, values, null, null);
+                    } catch (SQLiteFullException e) {
+                        Log.e(LOGTAG,"Handle Sqlite error");
+                    }
                 }
             }
         }.execute();

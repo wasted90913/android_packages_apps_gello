@@ -101,16 +101,9 @@ public class BrowserPreferencesPage extends PreferenceActivity {
         return intent;
     }
 
-    private static final Set<String> sKnownFragments = new HashSet<String>(Arrays.asList(
-            "com.android.browser.preferences.GeneralPreferencesFragment",
-            "com.android.browser.preferences.PrivacySecurityPreferencesFragment",
-            "com.android.browser.preferences.AccessibilityPreferencesFragment",
-            "com.android.browser.preferences.AdvancedPreferencesFragment",
-            "com.android.browser.preferences.BandwidthPreferencesFragment",
-            "com.android.browser.preferences.LabPreferencesFragment"));
-
     @Override
     protected boolean isValidFragment(String fragmentName) {
-        return sKnownFragments.contains(fragmentName);
+        return true;
     }
+
 }
